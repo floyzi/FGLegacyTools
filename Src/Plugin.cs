@@ -19,7 +19,7 @@ using Debug = UnityEngine.Debug;
 
 namespace ThatOneRandom3AMProject
 {
-    [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
+    [BepInPlugin(GUID, DisplayName, MyPluginInfo.PLUGIN_VERSION)]
     public class Plugin : BasePlugin
     {
         internal readonly struct BuildInfo
@@ -39,8 +39,8 @@ namespace ThatOneRandom3AMProject
                     BuildDate = DateTimeOffset.FromUnixTimeSeconds(unixTimestamp).UtcDateTime;
             }
 
-            public override readonly string ToString() => $"v{Version} (#{GetCommit()})";
-            readonly string GetCommit() => Commit.Length > 6 ? Commit[..6] : Commit;
+            public override readonly string ToString() => $"v{Version}";
+            internal readonly string GetCommit(int l) => Commit.Length > l ? Commit[..l] : Commit;
         }
 
         internal static new ManualLogSource Log;
@@ -62,10 +62,15 @@ namespace ThatOneRandom3AMProject
 
             BuildDetails = new BuildInfo(MyPluginInfo.PLUGIN_VERSION, commit.Length > 1 ? commit[1] : "...", buildDate, cfg);
 
-            Harmony = new("flz.test");
+            Harmony = new($"{GUID}.test");
             Harmony.PatchAll(typeof(HarmonyPatches));
 
             ClassInjector.RegisterTypeInIl2Cpp<Utility>();
+
+            Log.LogMessage($"---");
+            Log.LogMessage($"{DisplayName} - {BuildDetails} (#{BuildDetails.GetCommit(12)})");
+            Log.LogMessage($"Compiled at: {BuildDetails.BuildDate}");
+            Log.LogMessage($"---");
         }
     }
 }

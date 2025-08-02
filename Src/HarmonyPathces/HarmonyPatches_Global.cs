@@ -1,9 +1,12 @@
 ﻿using BepInEx;
+using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Events;
 using FallGuys.Player.Protocol.Client.Cosmetics;
 using FG.Common;
 #if !APR_27
 using FG.Common.CatapultServices;
+using FG.Common.Character;
+
 #endif
 using FG.Common.CMS;
 using FGClient;
@@ -58,7 +61,10 @@ namespace ThatOneRandom3AMProject.HarmonyPathces
             "COMMON_TeamQualificationObject",
             "COMMON_Bumper",
             "COMMON_PendulumBumper",
-            "COMMON_PrefabSpawner"
+            "COMMON_PrefabSpawner",
+            "COMMON_RoundProgressValueScaler",
+            "COMMON_GrabToQualify",
+
 
         ];
 
@@ -109,14 +115,12 @@ namespace ThatOneRandom3AMProject.HarmonyPathces
         static bool Connect(MainMenuViewModel __instance)
         {
             Utility.Instance.BootGame(null);
-
             return false;
         }
 
         [HarmonyPatch(typeof(GameSession), nameof(GameSession.SetSessionState)), HarmonyPostfix]
         static void SetSessionState(GameSession __instance, SessionState newState)
         {
-   
             switch (newState)
             {
                 case SessionState.Results:
@@ -128,24 +132,7 @@ namespace ThatOneRandom3AMProject.HarmonyPathces
         [HarmonyPatch(typeof(COMMON_PlayerEliminationVolume), nameof(COMMON_PlayerEliminationVolume.ConsiderEliminating)), HarmonyPrefix]
         static bool ConsiderEliminating(COMMON_PlayerEliminationVolume __instance, GameObject other)
         {
-            CGMDespatcher.process(new GameMessageServerPlayerProgress()
-            {
-                isFinal = true,
-                progressCause = GameMessageServerPlayerProgress.ProgressCause.Individual,
-                succeeded = false,
-#if APR_27
-                playerNetObjectID = GlobalGameStateClient.Instance.GameStateView.GetLiveClientGameManager()._myPlayerNetID,
-#else
-                playerId = GlobalGameStateClient.Instance.GameStateView.GetLiveClientGameManager()._myPlayerNetID.m_NetworkID,
-#endif
-            });
-
-            CGMDespatcher.process(new GameMessageServerEndRound()
-            {
-               episodeProgress = EpisodeProgressStatus.Complete,
-               progressState = PlayerProgressState.Playing,
-               shouldReconnect = false,
-            });
+            Utility.Instance.DoElimination();
             return false;
         }
 
@@ -213,6 +200,45 @@ namespace ThatOneRandom3AMProject.HarmonyPathces
             });
             return false;
         }
+
+        [HarmonyPatch(typeof(CarryObject), nameof(CarryObject.Start)), HarmonyPrefix]
+        static bool Start(CarryObject __instance)
+        {
+
+            var netObj = __instance.gameObject.AddComponent<MPGNetObject>();
+            netObj.netID_ = GlobalGameStateClient.Instance.NetObjectManager.getNextNetID();
+            netObj.spawnObjectType_ = EnumSpawnObjectType.POSSESS;
+            netObj.CreateTransform();
+            return true;
+        }
+
+        [HarmonyPatch(typeof(COMMON_Rotator), nameof(COMMON_Rotator.FixedUpdate)), HarmonyPrefix]
+        static bool FixedUpdate(COMMON_Rotator __instance)
+        {
+            return GlobalGameStateClient.Instance.GameStateView.IsGamePlaying;
+        }
+
+#if !APR_27
+        [HarmonyPatch(typeof(COMMON_GrabToQualify), nameof(COMMON_GrabToQualify.Start)), HarmonyPrefix]
+        static bool Start(COMMON_GrabToQualify __instance)
+        {
+            var netObj = __instance.gameObject.AddComponent<MPGNetObject>();
+            netObj.netID_ = GlobalGameStateClient.Instance.NetObjectManager.getNextNetID();
+            netObj.spawnObjectType_ = EnumSpawnObjectType.POSSESS;
+            netObj.CreateTransform();
+            return true;
+        }
+
+        [HarmonyPatch(typeof(MotorFunctionGrab), nameof(MotorFunctionGrab.IsValidTarget)), HarmonyPostfix]
+        static void Start(MotorFunctionGrab __instance, GrabTarget grabTarget, ref bool __result)
+        {
+            __result = grabTarget != null && grabTarget.IsValid;
+
+            if (grabTarget != null && grabTarget.TargetGameObject != null && grabTarget.TargetGameObject.TryGetComponent<COMMON_GrabToQualify>(out var targ))
+                targ.OnGrabbed(__instance.MotorAgent.Character.NetObject);
+        }
+#endif
+
 
         [HarmonyPatch(typeof(ClientGameManager), nameof(ClientGameManager.SetReady)), HarmonyPostfix]
         static void SetReady(ClientGameManager __instance, PlayerReadinessState readinessState)
@@ -293,13 +319,26 @@ namespace ThatOneRandom3AMProject.HarmonyPathces
                     ourPlayer.IsRemotelyControlledObject = false;
                     Utility.Instance.SetPlayer(ourPlayer);
 
-                    foreach (var netObj in Resources.FindObjectsOfTypeAll<CarryObject>())
-                        GameObject.Destroy(netObj);
+                    foreach (var netObj in Resources.FindObjectsOfTypeAll<MPGNetObject>())
+                        netObj.IsRemotelyControlledObject = false;
+
+                    //foreach (var netObj in Resources.FindObjectsOfTypeAll<CarryObject>())
+                    //    GameObject.Destroy(netObj);
+
                     break;
             }
         }
 
-        [HarmonyPatch(typeof(COMMON_PrefabSpawner), nameof(COMMON_PrefabSpawner.Spawn)), HarmonyPrefix]
+#if !APR_27
+        [HarmonyPatch(typeof(MotorFunctionMantleStateGrab), nameof(MotorFunctionMantleStateGrab.Begin)), HarmonyPostfix]
+        static void StartHang(MotorFunctionMantleStateGrab __instance, int prevState)
+        {
+            var mantleController = __instance.Character.MotorAgent.GetMotorFunction<MotorFunctionMantle>();
+            Utility.Instance.StartCoroutine(Utility.Instance.ContinueMantle(mantleController.GetState<MotorFunctionMantleStateClimbUp>().ID).WrapToIl2Cpp());
+        }
+#endif
+
+            [HarmonyPatch(typeof(COMMON_PrefabSpawner), nameof(COMMON_PrefabSpawner.Spawn)), HarmonyPrefix]
         static bool Spawn(COMMON_PrefabSpawner __instance)
         {
             var entry = __instance.GetRandomValidSpawnEntry();

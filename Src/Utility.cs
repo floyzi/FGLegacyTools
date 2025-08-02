@@ -1,11 +1,13 @@
 ﻿using Events;
 using FG.Common;
+using FG.Common.Character;
 using FG.Common.CMS;
 using FGClient;
 using HarmonyLib;
 using Il2CppInterop.Runtime;
 using Il2CppInterop.Runtime.Injection;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -128,6 +130,8 @@ namespace ThatOneRandom3AMProject
 
             if (CMSLoader.Instance.CMSData == null)
             {
+                Leave();
+
                 Broadcaster.Instance.Broadcast(new ShowModalMessageEvent()
                 {
                     Title = "generic_cms_not_loaded_title",
@@ -139,6 +143,8 @@ namespace ThatOneRandom3AMProject
 
             if (!cms.Rounds.ContainsKey(play))
             {
+                Leave();
+
                 Broadcaster.Instance.Broadcast(new ShowModalMessageEvent()
                 {
                     Title = "generic_round_not_found_title",
@@ -171,6 +177,9 @@ namespace ThatOneRandom3AMProject
 
         void DoQualification(MPGNetID playerObjectNetID, COMMON_ObjectiveBase pObjective)
         {
+            if (!GlobalGameStateClient.Instance.GameStateView.IsGamePlaying)
+                return;
+
             CGMDespatcher.process(new GameMessageServerPlayerProgress()
             {
                 isFinal = true,
@@ -189,6 +198,40 @@ namespace ThatOneRandom3AMProject
                 progressState = PlayerProgressState.Succeeded,
                 shouldReconnect = false,
             });
+        }
+
+        internal void DoElimination()
+        {
+            if (!GlobalGameStateClient.Instance.GameStateView.IsGamePlaying)
+                return;
+
+            //for some reason it insta kills you on slime climb
+            if (SceneManager.GetActiveScene().name.ToLower().Contains("lava"))
+                return;
+
+            CGMDespatcher.process(new GameMessageServerPlayerProgress()
+            {
+                isFinal = true,
+                progressCause = GameMessageServerPlayerProgress.ProgressCause.Individual,
+                succeeded = false,
+#if APR_27
+                playerNetObjectID = GlobalGameStateClient.Instance.GameStateView.GetLiveClientGameManager()._myPlayerNetID,
+#else
+                playerId = GlobalGameStateClient.Instance.GameStateView.GetLiveClientGameManager()._myPlayerNetID.m_NetworkID,
+#endif
+            });
+
+            CGMDespatcher.process(new GameMessageServerEndRound()
+            {
+                episodeProgress = EpisodeProgressStatus.Complete,
+                progressState = PlayerProgressState.Playing,
+                shouldReconnect = false,
+            });
+        }
+
+        static void Leave()
+        {
+            GlobalGameStateClient.Instance._gameStateMachine.ReplaceCurrentState(new StateReloading(GlobalGameStateClient.Instance._gameStateMachine, false, GlobalGameStateClient.Instance.CreateClientGameStateData()).Cast<GameStateMachine.IGameState>());
         }
 
         internal void RequestRandomRound()
@@ -218,16 +261,30 @@ namespace ThatOneRandom3AMProject
             if (!UIVisible)
                 return;
 
-            GUI.Box(new(0, 0, 112, 160), "NAME WANTED!!");
-            RoundToPlay = GUI.TextField(new(5, 20, 102, 20), RoundToPlay);
+            var isBuildKnown = Definitions.KnownBuilds.Contains(Application.version);
 
-            if (GUI.Button(new(5, 40, 102, 20), "Play"))
+            var bottomContent = new StringBuilder();
+            bottomContent.AppendLine($"{Plugin.BuildDetails} #{Plugin.BuildDetails.GetCommit(6)}");
+            if (!isBuildKnown)
+                bottomContent.AppendLine("<color=red>UNKNOWN BUILD!</color>");
+
+            var bottomSize = GUI.skin.label.CalcSize(new(bottomContent.ToString()));
+            var boxWidth = GUI.skin.box.CalcSize(new(DisplayName));
+            var actualWidth = boxWidth.x < 102 ? 102 : boxWidth.x;
+
+            GUI.Box(new(0, 0, actualWidth, 140 + bottomSize.y - 16), "");
+            GUI.Box(new(0, 0, actualWidth, 140 + bottomSize.y - 15), "");
+            GUI.Box(new(0, 0, actualWidth, 140 + bottomSize.y - 15), DisplayName);
+
+            RoundToPlay = GUI.TextField(new(5, 20, actualWidth - 10, 20), RoundToPlay);
+
+            if (GUI.Button(new(5, 40, actualWidth - 10, 20), "Play"))
                 BootGame(RoundToPlay);
 
-            if (GUI.Button(new(5, 60, 102, 20), "Random"))
+            if (GUI.Button(new(5, 60, actualWidth - 10, 20), "Random"))
                 RequestRandomRound();
 
-            if (GUI.Button(new(5, 80, 102, 20), "Round List"))
+            if (GUI.Button(new(5, 80, actualWidth - 10, 20), "Round List"))
             {
                 var cms = GetOrSetCMS();
                 var scenes = Enumerable.Range(0, SceneManager.sceneCountInBuildSettings).Select(i => System.IO.Path.GetFileNameWithoutExtension(SceneUtility.GetScenePathByBuildIndex(i))).ToList();
@@ -246,16 +303,19 @@ namespace ThatOneRandom3AMProject
 
                 var missing = scenes.Where(x => !knownScenes.Contains(x)).ToList();
                 Plugin.Log.LogWarning($"{missing.Count} non playable scenes found\n{string.Join(", ", missing)}");
-            }   
+            }
 
-            if (GUI.Button(new(5, 100, 102, 20), "Leave"))
-                GlobalGameStateClient.Instance._gameStateMachine.ReplaceCurrentState(new StateReloading(GlobalGameStateClient.Instance._gameStateMachine, false, GlobalGameStateClient.Instance.CreateClientGameStateData()).Cast<GameStateMachine.IGameState>());
-            
-            if (GUI.Button(new(5, 120, 102, 20), "About/Usage"))
+            if (GUI.Button(new(5, 100, actualWidth - 10, 20), "Leave"))
+                Leave();
+
+            if (GUI.Button(new(5, 120, actualWidth - 10, 20), "About/Usage"))
             {
                 PushString("generic_about", "ABOUT");
 
                 var builder = new StringBuilder();
+                if (!isBuildKnown)
+                    builder.AppendLine("<color=red>THIS BUILD IS NOT OFFICIALLY SUPPORTED BY THE MOD\nTHINGS MAY NOT WORK AS INTENDED</color>");
+                
                 builder.AppendLine("HOTKEYS");
                 builder.AppendLine($"{KeyCode.F2} - Toggle UI");
                 builder.AppendLine($"{KeyCode.F5} - Toggle Free Fly");
@@ -263,7 +323,8 @@ namespace ThatOneRandom3AMProject
                 builder.AppendLine("(Round List prints all rounds in BepInEx console!)");
                 builder.AppendLine("");
                 builder.AppendLine($"Made by Floyzi");
-                builder.AppendLine($"{Plugin.BuildDetails}");
+                builder.AppendLine($"{Plugin.BuildDetails} - #{Plugin.BuildDetails.GetCommit(12)}");
+                builder.AppendLine($"Compiled at: {Plugin.BuildDetails.BuildDate}");
                 builder.AppendLine($"Build for: {Plugin.BuildDetails.Config} running on {Application.version}");
 
                 PushString("generic_about_desc", $"{builder}");
@@ -276,9 +337,16 @@ namespace ThatOneRandom3AMProject
                 });
             }
 
-            GUI.Label(new(5, 140, 102, 20), $"{Plugin.BuildDetails}", new(GUI.skin.label) { alignment = TextAnchor.UpperCenter });
+            GUI.Label(new(5, 140, actualWidth, bottomSize.y), $"{bottomContent}", new(GUI.skin.label) { alignment = TextAnchor.UpperCenter });
         }
 
         internal void StartIntro() => GameLoading.StartIntroCameras();
+
+        //ass
+        internal IEnumerator ContinueMantle(int newId)
+        {
+            yield return new WaitForSeconds(0.25f);
+            LocalPlayer.MotorAgent.GetMotorFunction<MotorFunctionMantle>().SetState(newId);
+        }
     }
 }

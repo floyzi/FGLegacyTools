@@ -64,6 +64,7 @@ namespace ThatOneRandom3AMProject.HarmonyPathces
             "COMMON_PrefabSpawner",
             "COMMON_RoundProgressValueScaler",
             "COMMON_GrabToQualify",
+            "TeamQualificationObjectsScoreTracker",
 
 
         ];
@@ -124,8 +125,15 @@ namespace ThatOneRandom3AMProject.HarmonyPathces
             switch (newState)
             {
                 case SessionState.Results:
+#if APR_27
                     Utility.Instance.RequestRandomRound();
+#else
+                    if (!Utility.Instance.Won)
+                        Utility.Instance.RequestRandomRound();
+                    else
+                        GlobalGameStateClient.Instance.SwitchToVictoryScreen(Resources.FindObjectsOfTypeAll<PlayerProfile>().FirstOrDefault().CustomisationSelections, System.Environment.UserName, true);
                     break;
+#endif
             }
         }
 
@@ -246,6 +254,7 @@ namespace ThatOneRandom3AMProject.HarmonyPathces
             switch (readinessState)
             {
                 case PlayerReadinessState.LevelLoaded:
+
                     foreach (var doorset in Resources.FindObjectsOfTypeAll<COMMON_FakeDoorRandomiser>())
                     {
                         doorset.InitializeServerSideData();
@@ -280,7 +289,8 @@ namespace ThatOneRandom3AMProject.HarmonyPathces
 
                     __instance.GameRules.PreparePlayerStartingPositions();
 
-                    var pos = __instance.GameRules.PickRespawnPosition(-1);
+                    var team = Utility.Instance.GetTeamForPlayer();
+                    var pos = __instance.GameRules.PickRespawnPosition(team);
                     CGMDespatcher.process(new GameMessageServerSpawnObject()
                     {
                         _netObjectSpawnData = new()
@@ -297,7 +307,7 @@ namespace ThatOneRandom3AMProject.HarmonyPathces
 #if APR_27
                             _spawnData = NetworkAware_Player_NoEditor.NetworkAwarePlayer.encodeSpawnData(GlobalGameStateClient.Instance.GetLocalClientNetworkID(), 0, System.Environment.UserName, false, Resources.FindObjectsOfTypeAll<PlayerProfile>().First().CustomisationSelections),
 #else
-                            _spawnData = NetworkAware_Player_NoEditor.NetworkAwarePlayer.encodeSpawnData(GlobalGameStateClient.Instance.GetLocalClientNetworkID(), 0, System.Environment.UserName, -1, false, Resources.FindObjectsOfTypeAll<PlayerProfile>().First().CustomisationSelections),
+                            _spawnData = NetworkAware_Player_NoEditor.NetworkAwarePlayer.encodeSpawnData(GlobalGameStateClient.Instance.GetLocalClientNetworkID(), 0, System.Environment.UserName, team, false, Resources.FindObjectsOfTypeAll<PlayerProfile>().First().CustomisationSelections),
 #endif
                         }
                     });
@@ -338,17 +348,18 @@ namespace ThatOneRandom3AMProject.HarmonyPathces
         }
 #endif
 
-            [HarmonyPatch(typeof(COMMON_PrefabSpawner), nameof(COMMON_PrefabSpawner.Spawn)), HarmonyPrefix]
+        [HarmonyPatch(typeof(COMMON_PrefabSpawner), nameof(COMMON_PrefabSpawner.Spawn)), HarmonyPrefix]
         static bool Spawn(COMMON_PrefabSpawner __instance)
         {
             var entry = __instance.GetRandomValidSpawnEntry();
             if (entry == null)
                 return false;
 
-            var res = GameObject.Instantiate(entry.value, entry.value.transform.position, entry.value.transform.rotation);
 #if APR_27
+            var res = GameObject.Instantiate(entry.value, entry.value.transform.position, entry.value.transform.rotation);
             __instance.OnInstantiateObject(res);
 #else
+            var res = GameObject.Instantiate(entry.value, __instance.ChooseSpawnPosition(), entry.value.transform.rotation);
             __instance.OnInstantiateObject(res, entry);
 #endif
             return false;

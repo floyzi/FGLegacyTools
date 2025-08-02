@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ThatOneRandom3AMProject.GameStateView;
 using ThatOneRandom3AMProject.HarmonyPathces;
+using ThatOneRandom3AMProject.ServerGameStateView;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
@@ -33,6 +34,7 @@ namespace ThatOneRandom3AMProject
         internal FallGuysCharacterController LocalPlayer;
         bool UsingFreeFly;
         bool UIVisible = true;
+        internal bool Won;
         void Awake()
         {
             if (Instance != null)
@@ -118,8 +120,11 @@ namespace ThatOneRandom3AMProject
 
         internal void BootGame(string play)
         {
+            
             if (string.IsNullOrEmpty(play))
                 play = RoundToPlay;
+
+            play = play.ToLower();
 
             var cms = GetOrSetCMS();
 
@@ -161,8 +166,15 @@ namespace ThatOneRandom3AMProject
             if (!ClassInjector.IsTypeRegisteredInIl2Cpp<FLZ_ClientGameStateView>())
                 ClassInjector.RegisterTypeInIl2Cpp<FLZ_ClientGameStateView>();
 
+            if (!ClassInjector.IsTypeRegisteredInIl2Cpp<FLZ_ServerGameStateActions>())
+                ClassInjector.RegisterTypeInIl2Cpp<FLZ_ServerGameStateActions>();
+
             UsingFreeFly = false;
+            Won = false;
             ServerGameStateView = new FLZ_ClientGameStateView().Cast<IGameStateView>();
+
+            var actions = new FLZ_ServerGameStateActions();
+            ServerGameStateActions.Instance = new IGameStateServerActions(actions.Pointer);
 
             var r = cms.Rounds[play];
             NetworkGameData.SetGameOptionsFromRoundData(r);
@@ -175,10 +187,21 @@ namespace ThatOneRandom3AMProject
             COMMON_ObjectiveReachEndZone.m_OnObjectiveSatisfied_SERVERONLY += DelegateSupport.ConvertDelegate<HandleObjectiveSatisfied>(DoQualification);
         }
 
+        internal int GetTeamForPlayer()
+        {
+            if (ActiveRound == null || ActiveRound.TeamCount == 0)
+                return -1;
+
+            return UnityEngine.Random.RandomRange(0, ActiveRound.TeamCount - 1);
+        }
+
         void DoQualification(MPGNetID playerObjectNetID, COMMON_ObjectiveBase pObjective)
         {
             if (!GlobalGameStateClient.Instance.GameStateView.IsGamePlaying)
                 return;
+
+            if (pObjective.GetIl2CppType() == Il2CppType.Of<COMMON_GrabToQualify>())
+                Won = true;
 
             CGMDespatcher.process(new GameMessageServerPlayerProgress()
             {

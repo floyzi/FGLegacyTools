@@ -362,19 +362,20 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-!Lib
-
 Lib/Apr27_20/*
 !Lib/Apr27_20/README.md
 !Lib/Apr27_20/usage.*
+!Lib/Apr27_20/filler
 
 Lib/Apr30_20/*
 !Lib/Apr30_20/README.md
 !Lib/Apr30_20/usage.*
+!Lib/Apr30_20/filler
 
 Lib/May13_20/*
 !Lib/May13_20/README.md
 !Lib/May13_20/usage.*
+!Lib/May13_20/filler
 
 Release/*dll
 Release/*pdb

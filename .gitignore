@@ -377,5 +377,4 @@ Lib/May13_20/*
 !Lib/May13_20/usage.*
 !Lib/May13_20/filler
 
-Release/*dll
-Release/*pdb
+[Rr]elease/*

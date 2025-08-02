@@ -65,7 +65,7 @@ namespace ThatOneRandom3AMProject.HarmonyPathces
             "COMMON_RoundProgressValueScaler",
             "COMMON_GrabToQualify",
             "TeamQualificationObjectsScoreTracker",
-
+            "UITrackedObjectiveTransform",
 
         ];
 
@@ -132,8 +132,9 @@ namespace ThatOneRandom3AMProject.HarmonyPathces
                         Utility.Instance.RequestRandomRound();
                     else
                         GlobalGameStateClient.Instance.SwitchToVictoryScreen(Resources.FindObjectsOfTypeAll<PlayerProfile>().FirstOrDefault().CustomisationSelections, System.Environment.UserName, true);
-                    break;
+                 
 #endif
+                    break;
             }
         }
 

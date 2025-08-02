@@ -111,17 +111,18 @@ namespace ThatOneRandom3AMProject.ServerGameStateView
             throw new NotImplementedException();
         }
 
+#if !APR_27
         void SetJumbotronDisplay(JumbotronDisplayNetworkData displaydata)
         {
             throw new NotImplementedException();
         }
 
-        void StartSubRound(int subRoundIndex)
+             void SendClientUIAlert(UIOverlayAlertMessageNetworkData networkData)
         {
             throw new NotImplementedException();
         }
-
-        void SendClientUIAlert(UIOverlayAlertMessageNetworkData networkData)
+#endif
+        void StartSubRound(int subRoundIndex)
         {
             throw new NotImplementedException();
         }

@@ -1,0 +1,1546 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AssemblyName>ThatOneRandom3AMProject_$(Configuration)</AssemblyName>
+    <Product>My first plugin</Product>
+    <Version>0.0.1</Version>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
+    <RestoreAdditionalProjectSources>
+      https://api.nuget.org/v3/index.json;
+      https://nuget.bepinex.dev/v3/index.json;
+      https://nuget.samboy.dev/v3/index.json
+    </RestoreAdditionalProjectSources>
+    <RootNamespace>ThatOneRandom3AMProject</RootNamespace>
+    <Configurations>APR_27;APR_30;MAY_13</Configurations>
+	<Authors>floyzi</Authors>
+	<PackageProjectUrl>https://github.com/floyzi/</PackageProjectUrl>
+	<Optimize>True</Optimize>
+  </PropertyGroup>
+
+	<PropertyGroup>
+		<ReleaseDir>$(SolutionDir)Release\</ReleaseDir>
+		<LibsDir>$(SolutionDir)Lib\</LibsDir>
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<AssemblyMetadata Include="BuildDate" Value="$([System.DateTimeOffset]::UtcNow.ToUnixTimeSeconds())" />
+	</ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' == 'APR_27'">
+    <EmbeddedResource Include="AddotionalContent\cms_data_APR_27" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' != 'APR_27'">
+	  <EmbeddedResource Include="AddotionalContent\cms_data_FULL" />
+  </ItemGroup>
+
+	<ItemGroup Condition="'$(Configuration)' == 'APR_27'">
+		<Compile Remove="Cosmetics\**\*.cs" />
+	</ItemGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(ReleaseDir)" />
+		<Copy SourceFiles="$(OutputPath)$(AssemblyName).pdb" DestinationFolder="$(ReleaseDir)" Condition="Exists('$(OutputPath)$(AssemblyName).pdb')" />
+	</Target>
+	
+  <ItemGroup>
+    <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.*" IncludeAssets="compile" />
+    <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' == 'APR_27'">
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(LibsDir)Apr27_20\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass">
+      <HintPath>$(LibsDir)Apr27_20\Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
+    <Reference Include="Catapult.ClientSdk">
+      <HintPath>$(LibsDir)Apr27_20\Catapult.ClientSdk.dll</HintPath>
+    </Reference>
+    <Reference Include="Catapult.Modules.Items.Protocol">
+      <HintPath>$(LibsDir)Apr27_20\Catapult.Modules.Items.Protocol.dll</HintPath>
+    </Reference>
+    <Reference Include="Catapult.Protocol">
+      <HintPath>$(LibsDir)Apr27_20\Catapult.Protocol.dll</HintPath>
+    </Reference>
+    <Reference Include="Catapult.Services.Gateway.Protocol.Client">
+      <HintPath>$(LibsDir)Apr27_20\Catapult.Services.Gateway.Protocol.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Catapult.Services.Login.Protocol.Client">
+      <HintPath>$(LibsDir)Apr27_20\Catapult.Services.Login.Protocol.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Cinemachine">
+      <HintPath>$(LibsDir)Apr27_20\Cinemachine.dll</HintPath>
+    </Reference>
+    <Reference Include="CMS_Runtime">
+      <HintPath>$(LibsDir)Apr27_20\CMS_Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Coffee.SoftMaskForUGUI">
+      <HintPath>$(LibsDir)Apr27_20\Coffee.SoftMaskForUGUI.dll</HintPath>
+    </Reference>
+    <Reference Include="com.unity.multiplayer-hlapi.Runtime">
+      <HintPath>$(LibsDir)Apr27_20\com.unity.multiplayer-hlapi.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="DOTween">
+      <HintPath>$(LibsDir)Apr27_20\DOTween.dll</HintPath>
+    </Reference>
+    <Reference Include="DOTweenPro">
+      <HintPath>$(LibsDir)Apr27_20\DOTweenPro.dll</HintPath>
+    </Reference>
+    <Reference Include="FallGuys.Gateway.Protocol.Client">
+      <HintPath>$(LibsDir)Apr27_20\FallGuys.Gateway.Protocol.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="FallGuys.GeneratedProtocol">
+      <HintPath>$(LibsDir)Apr27_20\FallGuys.GeneratedProtocol.dll</HintPath>
+    </Reference>
+    <Reference Include="FallGuys.Matchmaking.protocol">
+      <HintPath>$(LibsDir)Apr27_20\FallGuys.Matchmaking.protocol.dll</HintPath>
+    </Reference>
+    <Reference Include="FallGuys.Player.Protocol.Client">
+      <HintPath>$(LibsDir)Apr27_20\FallGuys.Player.Protocol.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="FMOD">
+      <HintPath>$(LibsDir)Apr27_20\FMOD.dll</HintPath>
+    </Reference>
+    <Reference Include="FMOD.ResonanceAudio">
+      <HintPath>$(LibsDir)Apr27_20\FMOD.ResonanceAudio.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Protobuf">
+      <HintPath>$(LibsDir)Apr27_20\Google.Protobuf.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppMono.Security">
+      <HintPath>$(LibsDir)Apr27_20\Il2CppMono.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2Cppmscorlib">
+      <HintPath>$(LibsDir)Apr27_20\Il2Cppmscorlib.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem">
+      <HintPath>$(LibsDir)Apr27_20\Il2CppSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem.Configuration">
+      <HintPath>$(LibsDir)Apr27_20\Il2CppSystem.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem.Core">
+      <HintPath>$(LibsDir)Apr27_20\Il2CppSystem.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem.Data">
+      <HintPath>$(LibsDir)Apr27_20\Il2CppSystem.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem.Diagnostics.StackTrace">
+      <HintPath>$(LibsDir)Apr27_20\Il2CppSystem.Diagnostics.StackTrace.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem.Globalization.Extensions">
+      <HintPath>$(LibsDir)Apr27_20\Il2CppSystem.Globalization.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem.IO.Compression">
+      <HintPath>$(LibsDir)Apr27_20\Il2CppSystem.IO.Compression.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem.Numerics">
+      <HintPath>$(LibsDir)Apr27_20\Il2CppSystem.Numerics.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem.Runtime.Serialization">
+      <HintPath>$(LibsDir)Apr27_20\Il2CppSystem.Runtime.Serialization.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem.Xml">
+      <HintPath>$(LibsDir)Apr27_20\Il2CppSystem.Xml.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem.Xml.Linq">
+      <HintPath>$(LibsDir)Apr27_20\Il2CppSystem.Xml.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="Mediatonic.Automation.Config">
+      <HintPath>$(LibsDir)Apr27_20\Mediatonic.Automation.Config.dll</HintPath>
+    </Reference>
+    <Reference Include="Mediatonic.Automation.FG.Config">
+      <HintPath>$(LibsDir)Apr27_20\Mediatonic.Automation.FG.Config.dll</HintPath>
+    </Reference>
+    <Reference Include="Mediatonic.Automation.FG.Utility">
+      <HintPath>$(LibsDir)Apr27_20\Mediatonic.Automation.FG.Utility.dll</HintPath>
+    </Reference>
+    <Reference Include="Mediatonic.Automation.Utility">
+      <HintPath>$(LibsDir)Apr27_20\Mediatonic.Automation.Utility.dll</HintPath>
+    </Reference>
+    <Reference Include="MiniJson_Runtime">
+      <HintPath>$(LibsDir)Apr27_20\MiniJson_Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="MT.FGClient">
+      <HintPath>$(LibsDir)Apr27_20\MT.FGClient.dll</HintPath>
+    </Reference>
+    <Reference Include="mvvmbindings">
+      <HintPath>$(LibsDir)Apr27_20\mvvmbindings.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>$(LibsDir)Apr27_20\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="ParsingUtils_Runtime">
+      <HintPath>$(LibsDir)Apr27_20\ParsingUtils_Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>$(LibsDir)Apr27_20\protobuf-net.dll</HintPath>
+    </Reference>
+    <Reference Include="Rewired_Core">
+      <HintPath>$(LibsDir)Apr27_20\Rewired_Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Rewired_Windows">
+      <HintPath>$(LibsDir)Apr27_20\Rewired_Windows.dll</HintPath>
+    </Reference>
+    <Reference Include="TheMultiplayerGuys.FGCommon">
+      <HintPath>$(LibsDir)Apr27_20\TheMultiplayerGuys.FGCommon.dll</HintPath>
+    </Reference>
+    <Reference Include="TheMultiplayerGuys.Utility">
+      <HintPath>$(LibsDir)Apr27_20\TheMultiplayerGuys.Utility.dll</HintPath>
+    </Reference>
+    <Reference Include="TonicTools">
+      <HintPath>$(LibsDir)Apr27_20\TonicTools.dll</HintPath>
+    </Reference>
+    <Reference Include="UniRx">
+      <HintPath>$(LibsDir)Apr27_20\UniRx.dll</HintPath>
+    </Reference>
+    <Reference Include="UniRx.Async">
+      <HintPath>$(LibsDir)Apr27_20\UniRx.Async.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Postprocessing.Runtime">
+      <HintPath>$(LibsDir)Apr27_20\Unity.Postprocessing.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ProBuilder">
+      <HintPath>$(LibsDir)Apr27_20\Unity.ProBuilder.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ProBuilder.KdTree">
+      <HintPath>$(LibsDir)Apr27_20\Unity.ProBuilder.KdTree.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ProBuilder.Poly2Tri">
+      <HintPath>$(LibsDir)Apr27_20\Unity.ProBuilder.Poly2Tri.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>$(LibsDir)Apr27_20\Unity.TextMeshPro.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Timeline">
+      <HintPath>$(LibsDir)Apr27_20\Unity.Timeline.dll</HintPath>
+    </Reference>
+    <Reference Include="unity.ucg.mmconnector">
+      <HintPath>$(LibsDir)Apr27_20\unity.ucg.mmconnector.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AccessibilityModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.AccessibilityModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AIModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.AIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AndroidJNIModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.AndroidJNIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AnimationModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.AnimationModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ARModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.ARModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AssetBundleModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.AssetBundleModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AudioModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.AudioModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ClothModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.ClothModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ClusterInputModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.ClusterInputModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ClusterRendererModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.ClusterRendererModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CrashReportingModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.CrashReportingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.DirectorModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.DirectorModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.DSPGraphModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.DSPGraphModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.FileSystemHttpModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.FileSystemHttpModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.GameCenterModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.GameCenterModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.GridModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.GridModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.HotReloadModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.HotReloadModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.ImageConversionModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.InputLegacyModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.InputModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.JSONSerializeModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.JSONSerializeModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.LocalizationModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.LocalizationModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ParticleSystemModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.ParticleSystemModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PerformanceReportingModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.PerformanceReportingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Physics2DModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.Physics2DModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.PhysicsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ProfilerModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.ProfilerModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ScreenCaptureModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.ScreenCaptureModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SharedInternalsModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.SharedInternalsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SpriteMaskModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.SpriteMaskModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SpriteShapeModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.SpriteShapeModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.StreamingModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.StreamingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SubstanceModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.SubstanceModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TerrainModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.TerrainModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TerrainPhysicsModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.TerrainPhysicsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextCoreModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.TextCoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.TextRenderingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TilemapModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.TilemapModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TLSModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.TLSModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Ucg.Matchmaking">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.Ucg.Matchmaking.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIElementsModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.UIElementsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.UIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UmbraModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.UmbraModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UNETModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.UNETModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityAnalyticsModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.UnityAnalyticsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityConnectModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.UnityConnectModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityTestProtocolModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.UnityTestProtocolModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestAssetBundleModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestAudioModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.UnityWebRequestModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestTextureModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestWWWModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VehiclesModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.VehiclesModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VFXModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.VFXModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VideoModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.VideoModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VRModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.VRModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.WindModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.WindModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.XRModule">
+      <HintPath>$(LibsDir)Apr27_20\UnityEngine.XRModule.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+	<ItemGroup Condition="'$(Configuration)' == 'APR_30'">
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(LibsDir)Apr30_20\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass">
+      <HintPath>$(LibsDir)Apr30_20\Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
+    <Reference Include="Backtrace-Unity">
+      <HintPath>$(LibsDir)Apr30_20\Backtrace-Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Catapult.ClientSdk">
+      <HintPath>$(LibsDir)Apr30_20\Catapult.ClientSdk.dll</HintPath>
+    </Reference>
+    <Reference Include="Catapult.Modules.Items.Protocol">
+      <HintPath>$(LibsDir)Apr30_20\Catapult.Modules.Items.Protocol.dll</HintPath>
+    </Reference>
+    <Reference Include="Catapult.Modules.Store.Protocol">
+      <HintPath>$(LibsDir)Apr30_20\Catapult.Modules.Store.Protocol.dll</HintPath>
+    </Reference>
+    <Reference Include="Catapult.Protocol">
+      <HintPath>$(LibsDir)Apr30_20\Catapult.Protocol.dll</HintPath>
+    </Reference>
+    <Reference Include="Catapult.Services.Gateway.Protocol.Client">
+      <HintPath>$(LibsDir)Apr30_20\Catapult.Services.Gateway.Protocol.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Catapult.Services.Login.Protocol.Client">
+      <HintPath>$(LibsDir)Apr30_20\Catapult.Services.Login.Protocol.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Cinemachine">
+      <HintPath>$(LibsDir)Apr30_20\Cinemachine.dll</HintPath>
+    </Reference>
+    <Reference Include="CMS_Runtime">
+      <HintPath>$(LibsDir)Apr30_20\CMS_Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Coffee.SoftMaskForUGUI">
+      <HintPath>$(LibsDir)Apr30_20\Coffee.SoftMaskForUGUI.dll</HintPath>
+    </Reference>
+    <Reference Include="com.unity.multiplayer-hlapi.Runtime">
+      <HintPath>$(LibsDir)Apr30_20\com.unity.multiplayer-hlapi.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="DOTween">
+      <HintPath>$(LibsDir)Apr30_20\DOTween.dll</HintPath>
+    </Reference>
+    <Reference Include="DOTweenPro">
+      <HintPath>$(LibsDir)Apr30_20\DOTweenPro.dll</HintPath>
+    </Reference>
+    <Reference Include="FallGuys.Gateway.Protocol.Client">
+      <HintPath>$(LibsDir)Apr30_20\FallGuys.Gateway.Protocol.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="FallGuys.GeneratedProtocol">
+      <HintPath>$(LibsDir)Apr30_20\FallGuys.GeneratedProtocol.dll</HintPath>
+    </Reference>
+    <Reference Include="FallGuys.Matchmaking.protocol">
+      <HintPath>$(LibsDir)Apr30_20\FallGuys.Matchmaking.protocol.dll</HintPath>
+    </Reference>
+    <Reference Include="FallGuys.Player.Protocol.Client">
+      <HintPath>$(LibsDir)Apr30_20\FallGuys.Player.Protocol.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="FMOD">
+      <HintPath>$(LibsDir)Apr30_20\FMOD.dll</HintPath>
+    </Reference>
+    <Reference Include="FMOD.ResonanceAudio">
+      <HintPath>$(LibsDir)Apr30_20\FMOD.ResonanceAudio.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Protobuf">
+      <HintPath>$(LibsDir)Apr30_20\Google.Protobuf.dll</HintPath>
+    </Reference>
+    <Reference Include="Ibuprogames.CameraTransitionsAsset">
+      <HintPath>$(LibsDir)Apr30_20\Ibuprogames.CameraTransitionsAsset.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppMono.Security">
+      <HintPath>$(LibsDir)Apr30_20\Il2CppMono.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2Cppmscorlib">
+      <HintPath>$(LibsDir)Apr30_20\Il2Cppmscorlib.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem">
+      <HintPath>$(LibsDir)Apr30_20\Il2CppSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem.Configuration">
+      <HintPath>$(LibsDir)Apr30_20\Il2CppSystem.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem.Core">
+      <HintPath>$(LibsDir)Apr30_20\Il2CppSystem.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem.Data">
+      <HintPath>$(LibsDir)Apr30_20\Il2CppSystem.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem.Diagnostics.StackTrace">
+      <HintPath>$(LibsDir)Apr30_20\Il2CppSystem.Diagnostics.StackTrace.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem.Globalization.Extensions">
+      <HintPath>$(LibsDir)Apr30_20\Il2CppSystem.Globalization.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem.IO.Compression">
+      <HintPath>$(LibsDir)Apr30_20\Il2CppSystem.IO.Compression.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem.Numerics">
+      <HintPath>$(LibsDir)Apr30_20\Il2CppSystem.Numerics.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem.Runtime">
+      <HintPath>$(LibsDir)Apr30_20\Il2CppSystem.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem.Runtime.Serialization">
+      <HintPath>$(LibsDir)Apr30_20\Il2CppSystem.Runtime.Serialization.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem.Xml">
+      <HintPath>$(LibsDir)Apr30_20\Il2CppSystem.Xml.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem.Xml.Linq">
+      <HintPath>$(LibsDir)Apr30_20\Il2CppSystem.Xml.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="Mediatonic.Automation.Config">
+      <HintPath>$(LibsDir)Apr30_20\Mediatonic.Automation.Config.dll</HintPath>
+    </Reference>
+    <Reference Include="Mediatonic.Automation.FG.Config">
+      <HintPath>$(LibsDir)Apr30_20\Mediatonic.Automation.FG.Config.dll</HintPath>
+    </Reference>
+    <Reference Include="Mediatonic.Automation.FG.Utility">
+      <HintPath>$(LibsDir)Apr30_20\Mediatonic.Automation.FG.Utility.dll</HintPath>
+    </Reference>
+    <Reference Include="Mediatonic.Automation.Utility">
+      <HintPath>$(LibsDir)Apr30_20\Mediatonic.Automation.Utility.dll</HintPath>
+    </Reference>
+    <Reference Include="MiniJson_Runtime">
+      <HintPath>$(LibsDir)Apr30_20\MiniJson_Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="MT.FGClient">
+      <HintPath>$(LibsDir)Apr30_20\MT.FGClient.dll</HintPath>
+    </Reference>
+    <Reference Include="mvvmbindings">
+      <HintPath>$(LibsDir)Apr30_20\mvvmbindings.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>$(LibsDir)Apr30_20\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="ParsingUtils_Runtime">
+      <HintPath>$(LibsDir)Apr30_20\ParsingUtils_Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>$(LibsDir)Apr30_20\protobuf-net.dll</HintPath>
+    </Reference>
+    <Reference Include="Rewired_Core">
+      <HintPath>$(LibsDir)Apr30_20\Rewired_Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Rewired_Windows">
+      <HintPath>$(LibsDir)Apr30_20\Rewired_Windows.dll</HintPath>
+    </Reference>
+    <Reference Include="TheMultiplayerGuys.FGCommon">
+      <HintPath>$(LibsDir)Apr30_20\TheMultiplayerGuys.FGCommon.dll</HintPath>
+    </Reference>
+    <Reference Include="TheMultiplayerGuys.Utility">
+      <HintPath>$(LibsDir)Apr30_20\TheMultiplayerGuys.Utility.dll</HintPath>
+    </Reference>
+    <Reference Include="TonicTools">
+      <HintPath>$(LibsDir)Apr30_20\TonicTools.dll</HintPath>
+    </Reference>
+    <Reference Include="UniRx">
+      <HintPath>$(LibsDir)Apr30_20\UniRx.dll</HintPath>
+    </Reference>
+    <Reference Include="UniRx.Async">
+      <HintPath>$(LibsDir)Apr30_20\UniRx.Async.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Networking.Transport">
+      <HintPath>$(LibsDir)Apr30_20\Unity.Networking.Transport.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Postprocessing.Runtime">
+      <HintPath>$(LibsDir)Apr30_20\Unity.Postprocessing.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ProBuilder">
+      <HintPath>$(LibsDir)Apr30_20\Unity.ProBuilder.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ProBuilder.KdTree">
+      <HintPath>$(LibsDir)Apr30_20\Unity.ProBuilder.KdTree.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ProBuilder.Poly2Tri">
+      <HintPath>$(LibsDir)Apr30_20\Unity.ProBuilder.Poly2Tri.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>$(LibsDir)Apr30_20\Unity.TextMeshPro.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Timeline">
+      <HintPath>$(LibsDir)Apr30_20\Unity.Timeline.dll</HintPath>
+    </Reference>
+    <Reference Include="unity.ucg.mmconnector">
+      <HintPath>$(LibsDir)Apr30_20\unity.ucg.mmconnector.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ucg.QoS">
+      <HintPath>$(LibsDir)Apr30_20\Unity.ucg.QoS.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AccessibilityModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.AccessibilityModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AIModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.AIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AndroidJNIModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.AndroidJNIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AnimationModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.AnimationModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ARModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.ARModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AssetBundleModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.AssetBundleModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AudioModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.AudioModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ClothModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.ClothModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ClusterInputModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.ClusterInputModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ClusterRendererModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.ClusterRendererModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CrashReportingModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.CrashReportingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.DirectorModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.DirectorModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.DSPGraphModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.DSPGraphModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.GameCenterModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.GameCenterModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.GridModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.GridModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.HotReloadModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.HotReloadModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.ImageConversionModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.InputLegacyModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.InputModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.JSONSerializeModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.JSONSerializeModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.LocalizationModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.LocalizationModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ParticleSystemModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.ParticleSystemModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PerformanceReportingModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.PerformanceReportingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Physics2DModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.Physics2DModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.PhysicsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ProfilerModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.ProfilerModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ScreenCaptureModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.ScreenCaptureModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SharedInternalsModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.SharedInternalsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SpriteMaskModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.SpriteMaskModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SpriteShapeModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.SpriteShapeModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.StreamingModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.StreamingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SubstanceModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.SubstanceModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SubsystemsModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.SubsystemsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TerrainModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.TerrainModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TerrainPhysicsModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.TerrainPhysicsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextCoreModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.TextCoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.TextRenderingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TilemapModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.TilemapModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TLSModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.TLSModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Ucg.Matchmaking">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.Ucg.Matchmaking.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIElementsModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.UIElementsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.UIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UmbraModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.UmbraModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UNETModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.UNETModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityAnalyticsModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.UnityAnalyticsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityConnectModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.UnityConnectModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityTestProtocolModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.UnityTestProtocolModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestAssetBundleModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestAudioModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.UnityWebRequestModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestTextureModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestWWWModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VehiclesModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.VehiclesModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VFXModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.VFXModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VideoModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.VideoModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VRModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.VRModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.WindModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.WindModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.XRModule">
+      <HintPath>$(LibsDir)Apr30_20\UnityEngine.XRModule.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+	<ItemGroup Condition="'$(Configuration)'=='APR_30'">
+	  <Reference Include="Assembly-CSharp">
+	    <HintPath>$(LibsDir)Apr30_20\Assembly-CSharp.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Assembly-CSharp-firstpass">
+	    <HintPath>$(LibsDir)Apr30_20\Assembly-CSharp-firstpass.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Backtrace-Unity">
+	    <HintPath>$(LibsDir)Apr30_20\Backtrace-Unity.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Catapult.ClientSdk">
+	    <HintPath>$(LibsDir)Apr30_20\Catapult.ClientSdk.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Catapult.Modules.Items.Protocol">
+	    <HintPath>$(LibsDir)Apr30_20\Catapult.Modules.Items.Protocol.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Catapult.Modules.Store.Protocol">
+	    <HintPath>$(LibsDir)Apr30_20\Catapult.Modules.Store.Protocol.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Catapult.Protocol">
+	    <HintPath>$(LibsDir)Apr30_20\Catapult.Protocol.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Catapult.Services.Gateway.Protocol.Client">
+	    <HintPath>$(LibsDir)Apr30_20\Catapult.Services.Gateway.Protocol.Client.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Catapult.Services.Login.Protocol.Client">
+	    <HintPath>$(LibsDir)Apr30_20\Catapult.Services.Login.Protocol.Client.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Cinemachine">
+	    <HintPath>$(LibsDir)Apr30_20\Cinemachine.dll</HintPath>
+	  </Reference>
+	  <Reference Include="CMS_Runtime">
+	    <HintPath>$(LibsDir)Apr30_20\CMS_Runtime.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Coffee.SoftMaskForUGUI">
+	    <HintPath>$(LibsDir)Apr30_20\Coffee.SoftMaskForUGUI.dll</HintPath>
+	  </Reference>
+	  <Reference Include="com.unity.multiplayer-hlapi.Runtime">
+	    <HintPath>$(LibsDir)Apr30_20\com.unity.multiplayer-hlapi.Runtime.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DOTween">
+	    <HintPath>$(LibsDir)Apr30_20\DOTween.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DOTweenPro">
+	    <HintPath>$(LibsDir)Apr30_20\DOTweenPro.dll</HintPath>
+	  </Reference>
+	  <Reference Include="FallGuys.Gateway.Protocol.Client">
+	    <HintPath>$(LibsDir)Apr30_20\FallGuys.Gateway.Protocol.Client.dll</HintPath>
+	  </Reference>
+	  <Reference Include="FallGuys.GeneratedProtocol">
+	    <HintPath>$(LibsDir)Apr30_20\FallGuys.GeneratedProtocol.dll</HintPath>
+	  </Reference>
+	  <Reference Include="FallGuys.Matchmaking.protocol">
+	    <HintPath>$(LibsDir)Apr30_20\FallGuys.Matchmaking.protocol.dll</HintPath>
+	  </Reference>
+	  <Reference Include="FallGuys.Player.Protocol.Client">
+	    <HintPath>$(LibsDir)Apr30_20\FallGuys.Player.Protocol.Client.dll</HintPath>
+	  </Reference>
+	  <Reference Include="FMOD">
+	    <HintPath>$(LibsDir)Apr30_20\FMOD.dll</HintPath>
+	  </Reference>
+	  <Reference Include="FMOD.ResonanceAudio">
+	    <HintPath>$(LibsDir)Apr30_20\FMOD.ResonanceAudio.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Google.Protobuf">
+	    <HintPath>$(LibsDir)Apr30_20\Google.Protobuf.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Ibuprogames.CameraTransitionsAsset">
+	    <HintPath>$(LibsDir)Apr30_20\Ibuprogames.CameraTransitionsAsset.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Il2CppMono.Security">
+	    <HintPath>$(LibsDir)Apr30_20\Il2CppMono.Security.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Il2Cppmscorlib">
+	    <HintPath>$(LibsDir)Apr30_20\Il2Cppmscorlib.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Il2CppSystem">
+	    <HintPath>$(LibsDir)Apr30_20\Il2CppSystem.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Il2CppSystem.Configuration">
+	    <HintPath>$(LibsDir)Apr30_20\Il2CppSystem.Configuration.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Il2CppSystem.Core">
+	    <HintPath>$(LibsDir)Apr30_20\Il2CppSystem.Core.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Il2CppSystem.Data">
+	    <HintPath>$(LibsDir)Apr30_20\Il2CppSystem.Data.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Il2CppSystem.Diagnostics.StackTrace">
+	    <HintPath>$(LibsDir)Apr30_20\Il2CppSystem.Diagnostics.StackTrace.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Il2CppSystem.Globalization.Extensions">
+	    <HintPath>$(LibsDir)Apr30_20\Il2CppSystem.Globalization.Extensions.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Il2CppSystem.IO.Compression">
+	    <HintPath>$(LibsDir)Apr30_20\Il2CppSystem.IO.Compression.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Il2CppSystem.Numerics">
+	    <HintPath>$(LibsDir)Apr30_20\Il2CppSystem.Numerics.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Il2CppSystem.Runtime">
+	    <HintPath>$(LibsDir)Apr30_20\Il2CppSystem.Runtime.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Il2CppSystem.Runtime.Serialization">
+	    <HintPath>$(LibsDir)Apr30_20\Il2CppSystem.Runtime.Serialization.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Il2CppSystem.Xml">
+	    <HintPath>$(LibsDir)Apr30_20\Il2CppSystem.Xml.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Il2CppSystem.Xml.Linq">
+	    <HintPath>$(LibsDir)Apr30_20\Il2CppSystem.Xml.Linq.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Mediatonic.Automation.Config">
+	    <HintPath>$(LibsDir)Apr30_20\Mediatonic.Automation.Config.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Mediatonic.Automation.FG.Config">
+	    <HintPath>$(LibsDir)Apr30_20\Mediatonic.Automation.FG.Config.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Mediatonic.Automation.FG.Utility">
+	    <HintPath>$(LibsDir)Apr30_20\Mediatonic.Automation.FG.Utility.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Mediatonic.Automation.Utility">
+	    <HintPath>$(LibsDir)Apr30_20\Mediatonic.Automation.Utility.dll</HintPath>
+	  </Reference>
+	  <Reference Include="MiniJson_Runtime">
+	    <HintPath>$(LibsDir)Apr30_20\MiniJson_Runtime.dll</HintPath>
+	  </Reference>
+	  <Reference Include="MT.FGClient">
+	    <HintPath>$(LibsDir)Apr30_20\MT.FGClient.dll</HintPath>
+	  </Reference>
+	  <Reference Include="mvvmbindings">
+	    <HintPath>$(LibsDir)Apr30_20\mvvmbindings.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Newtonsoft.Json">
+	    <HintPath>$(LibsDir)Apr30_20\Newtonsoft.Json.dll</HintPath>
+	  </Reference>
+	  <Reference Include="ParsingUtils_Runtime">
+	    <HintPath>$(LibsDir)Apr30_20\ParsingUtils_Runtime.dll</HintPath>
+	  </Reference>
+	  <Reference Include="protobuf-net">
+	    <HintPath>$(LibsDir)Apr30_20\protobuf-net.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Rewired_Core">
+	    <HintPath>$(LibsDir)Apr30_20\Rewired_Core.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Rewired_Windows">
+	    <HintPath>$(LibsDir)Apr30_20\Rewired_Windows.dll</HintPath>
+	  </Reference>
+	  <Reference Include="TheMultiplayerGuys.FGCommon">
+	    <HintPath>$(LibsDir)Apr30_20\TheMultiplayerGuys.FGCommon.dll</HintPath>
+	  </Reference>
+	  <Reference Include="TheMultiplayerGuys.Utility">
+	    <HintPath>$(LibsDir)Apr30_20\TheMultiplayerGuys.Utility.dll</HintPath>
+	  </Reference>
+	  <Reference Include="TonicTools">
+	    <HintPath>$(LibsDir)Apr30_20\TonicTools.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UniRx">
+	    <HintPath>$(LibsDir)Apr30_20\UniRx.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UniRx.Async">
+	    <HintPath>$(LibsDir)Apr30_20\UniRx.Async.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Unity.Networking.Transport">
+	    <HintPath>$(LibsDir)Apr30_20\Unity.Networking.Transport.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Unity.Postprocessing.Runtime">
+	    <HintPath>$(LibsDir)Apr30_20\Unity.Postprocessing.Runtime.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Unity.ProBuilder">
+	    <HintPath>$(LibsDir)Apr30_20\Unity.ProBuilder.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Unity.ProBuilder.KdTree">
+	    <HintPath>$(LibsDir)Apr30_20\Unity.ProBuilder.KdTree.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Unity.ProBuilder.Poly2Tri">
+	    <HintPath>$(LibsDir)Apr30_20\Unity.ProBuilder.Poly2Tri.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Unity.TextMeshPro">
+	    <HintPath>$(LibsDir)Apr30_20\Unity.TextMeshPro.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Unity.Timeline">
+	    <HintPath>$(LibsDir)Apr30_20\Unity.Timeline.dll</HintPath>
+	  </Reference>
+	  <Reference Include="unity.ucg.mmconnector">
+	    <HintPath>$(LibsDir)Apr30_20\unity.ucg.mmconnector.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Unity.ucg.QoS">
+	    <HintPath>$(LibsDir)Apr30_20\Unity.ucg.QoS.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.AccessibilityModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.AccessibilityModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.AIModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.AIModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.AndroidJNIModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.AndroidJNIModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.AnimationModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.AnimationModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.ARModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.ARModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.AssetBundleModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.AssetBundleModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.AudioModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.AudioModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.ClothModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.ClothModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.ClusterInputModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.ClusterInputModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.ClusterRendererModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.ClusterRendererModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.CoreModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.CoreModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.CrashReportingModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.CrashReportingModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.DirectorModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.DirectorModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.DSPGraphModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.DSPGraphModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.GameCenterModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.GameCenterModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.GridModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.GridModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.HotReloadModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.HotReloadModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.ImageConversionModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.ImageConversionModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.IMGUIModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.IMGUIModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.InputLegacyModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.InputLegacyModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.InputModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.InputModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.JSONSerializeModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.JSONSerializeModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.LocalizationModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.LocalizationModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.ParticleSystemModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.ParticleSystemModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.PerformanceReportingModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.PerformanceReportingModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.Physics2DModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.Physics2DModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.PhysicsModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.PhysicsModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.ProfilerModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.ProfilerModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.ScreenCaptureModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.ScreenCaptureModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.SharedInternalsModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.SharedInternalsModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.SpriteMaskModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.SpriteMaskModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.SpriteShapeModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.SpriteShapeModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.StreamingModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.StreamingModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.SubstanceModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.SubstanceModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.SubsystemsModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.SubsystemsModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.TerrainModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.TerrainModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.TerrainPhysicsModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.TerrainPhysicsModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.TextCoreModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.TextCoreModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.TextRenderingModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.TextRenderingModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.TilemapModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.TilemapModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.TLSModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.TLSModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.Ucg.Matchmaking">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.Ucg.Matchmaking.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UI">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.UI.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UIElementsModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.UIElementsModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UIModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.UIModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UmbraModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.UmbraModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UNETModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.UNETModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UnityAnalyticsModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.UnityAnalyticsModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UnityConnectModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.UnityConnectModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UnityTestProtocolModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.UnityTestProtocolModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UnityWebRequestAssetBundleModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UnityWebRequestAudioModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UnityWebRequestModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.UnityWebRequestModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UnityWebRequestTextureModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UnityWebRequestWWWModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.VehiclesModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.VehiclesModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.VFXModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.VFXModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.VideoModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.VideoModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.VRModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.VRModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.WindModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.WindModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.XRModule">
+	    <HintPath>$(LibsDir)Apr30_20\UnityEngine.XRModule.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(Configuration)' == 'MAY_13'">
+	  <Reference Include="Assembly-CSharp">
+	    <HintPath>$(LibsDir)May13_20\Assembly-CSharp.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Assembly-CSharp-firstpass">
+	    <HintPath>$(LibsDir)May13_20\Assembly-CSharp-firstpass.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Backtrace-Unity">
+	    <HintPath>$(LibsDir)May13_20\Backtrace-Unity.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Catapult.ClientSdk">
+	    <HintPath>$(LibsDir)May13_20\Catapult.ClientSdk.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Catapult.Modules.Items.Protocol">
+	    <HintPath>$(LibsDir)May13_20\Catapult.Modules.Items.Protocol.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Catapult.Modules.Store.Protocol">
+	    <HintPath>$(LibsDir)May13_20\Catapult.Modules.Store.Protocol.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Catapult.Protocol">
+	    <HintPath>$(LibsDir)May13_20\Catapult.Protocol.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Catapult.Services.Gateway.Protocol.Client">
+	    <HintPath>$(LibsDir)May13_20\Catapult.Services.Gateway.Protocol.Client.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Catapult.Services.Login.Protocol.Client">
+	    <HintPath>$(LibsDir)May13_20\Catapult.Services.Login.Protocol.Client.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Cinemachine">
+	    <HintPath>$(LibsDir)May13_20\Cinemachine.dll</HintPath>
+	  </Reference>
+	  <Reference Include="CMS_Runtime">
+	    <HintPath>$(LibsDir)May13_20\CMS_Runtime.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Coffee.SoftMaskForUGUI">
+	    <HintPath>$(LibsDir)May13_20\Coffee.SoftMaskForUGUI.dll</HintPath>
+	  </Reference>
+	  <Reference Include="com.unity.multiplayer-hlapi.Runtime">
+	    <HintPath>$(LibsDir)May13_20\com.unity.multiplayer-hlapi.Runtime.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DOTween">
+	    <HintPath>$(LibsDir)May13_20\DOTween.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DOTweenPro">
+	    <HintPath>$(LibsDir)May13_20\DOTweenPro.dll</HintPath>
+	  </Reference>
+	  <Reference Include="FallGuys.Gateway.Protocol.Client">
+	    <HintPath>$(LibsDir)May13_20\FallGuys.Gateway.Protocol.Client.dll</HintPath>
+	  </Reference>
+	  <Reference Include="FallGuys.GeneratedProtocol">
+	    <HintPath>$(LibsDir)May13_20\FallGuys.GeneratedProtocol.dll</HintPath>
+	  </Reference>
+	  <Reference Include="FallGuys.Matchmaking.protocol">
+	    <HintPath>$(LibsDir)May13_20\FallGuys.Matchmaking.protocol.dll</HintPath>
+	  </Reference>
+	  <Reference Include="FallGuys.Player.Protocol.Client">
+	    <HintPath>$(LibsDir)May13_20\FallGuys.Player.Protocol.Client.dll</HintPath>
+	  </Reference>
+	  <Reference Include="FMOD">
+	    <HintPath>$(LibsDir)May13_20\FMOD.dll</HintPath>
+	  </Reference>
+	  <Reference Include="FMOD.ResonanceAudio">
+	    <HintPath>$(LibsDir)May13_20\FMOD.ResonanceAudio.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Google.Protobuf">
+	    <HintPath>$(LibsDir)May13_20\Google.Protobuf.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Ibuprogames.CameraTransitionsAsset">
+	    <HintPath>$(LibsDir)May13_20\Ibuprogames.CameraTransitionsAsset.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Il2CppMono.Security">
+	    <HintPath>$(LibsDir)May13_20\Il2CppMono.Security.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Il2Cppmscorlib">
+	    <HintPath>$(LibsDir)May13_20\Il2Cppmscorlib.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Il2CppSystem">
+	    <HintPath>$(LibsDir)May13_20\Il2CppSystem.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Il2CppSystem.Configuration">
+	    <HintPath>$(LibsDir)May13_20\Il2CppSystem.Configuration.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Il2CppSystem.Core">
+	    <HintPath>$(LibsDir)May13_20\Il2CppSystem.Core.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Il2CppSystem.Data">
+	    <HintPath>$(LibsDir)May13_20\Il2CppSystem.Data.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Il2CppSystem.Diagnostics.StackTrace">
+	    <HintPath>$(LibsDir)May13_20\Il2CppSystem.Diagnostics.StackTrace.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Il2CppSystem.Globalization.Extensions">
+	    <HintPath>$(LibsDir)May13_20\Il2CppSystem.Globalization.Extensions.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Il2CppSystem.IO.Compression">
+	    <HintPath>$(LibsDir)May13_20\Il2CppSystem.IO.Compression.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Il2CppSystem.Numerics">
+	    <HintPath>$(LibsDir)May13_20\Il2CppSystem.Numerics.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Il2CppSystem.Runtime">
+	    <HintPath>$(LibsDir)May13_20\Il2CppSystem.Runtime.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Il2CppSystem.Runtime.Serialization">
+	    <HintPath>$(LibsDir)May13_20\Il2CppSystem.Runtime.Serialization.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Il2CppSystem.Xml">
+	    <HintPath>$(LibsDir)May13_20\Il2CppSystem.Xml.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Il2CppSystem.Xml.Linq">
+	    <HintPath>$(LibsDir)May13_20\Il2CppSystem.Xml.Linq.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Mediatonic.Automation.Config">
+	    <HintPath>$(LibsDir)May13_20\Mediatonic.Automation.Config.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Mediatonic.Automation.FG.Config">
+	    <HintPath>$(LibsDir)May13_20\Mediatonic.Automation.FG.Config.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Mediatonic.Automation.FG.Utility">
+	    <HintPath>$(LibsDir)May13_20\Mediatonic.Automation.FG.Utility.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Mediatonic.Automation.Utility">
+	    <HintPath>$(LibsDir)May13_20\Mediatonic.Automation.Utility.dll</HintPath>
+	  </Reference>
+	  <Reference Include="MiniJson_Runtime">
+	    <HintPath>$(LibsDir)May13_20\MiniJson_Runtime.dll</HintPath>
+	  </Reference>
+	  <Reference Include="MT.FGClient">
+	    <HintPath>$(LibsDir)May13_20\MT.FGClient.dll</HintPath>
+	  </Reference>
+	  <Reference Include="mvvmbindings">
+	    <HintPath>$(LibsDir)May13_20\mvvmbindings.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Newtonsoft.Json">
+	    <HintPath>$(LibsDir)May13_20\Newtonsoft.Json.dll</HintPath>
+	  </Reference>
+	  <Reference Include="ParsingUtils_Runtime">
+	    <HintPath>$(LibsDir)May13_20\ParsingUtils_Runtime.dll</HintPath>
+	  </Reference>
+	  <Reference Include="protobuf-net">
+	    <HintPath>$(LibsDir)May13_20\protobuf-net.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Rewired_Core">
+	    <HintPath>$(LibsDir)May13_20\Rewired_Core.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Rewired_Windows">
+	    <HintPath>$(LibsDir)May13_20\Rewired_Windows.dll</HintPath>
+	  </Reference>
+	  <Reference Include="TheMultiplayerGuys.FGCommon">
+	    <HintPath>$(LibsDir)May13_20\TheMultiplayerGuys.FGCommon.dll</HintPath>
+	  </Reference>
+	  <Reference Include="TheMultiplayerGuys.Utility">
+	    <HintPath>$(LibsDir)May13_20\TheMultiplayerGuys.Utility.dll</HintPath>
+	  </Reference>
+	  <Reference Include="TonicTools">
+	    <HintPath>$(LibsDir)May13_20\TonicTools.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UniRx">
+	    <HintPath>$(LibsDir)May13_20\UniRx.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UniRx.Async">
+	    <HintPath>$(LibsDir)May13_20\UniRx.Async.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Unity.Networking.Transport">
+	    <HintPath>$(LibsDir)May13_20\Unity.Networking.Transport.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Unity.Postprocessing.Runtime">
+	    <HintPath>$(LibsDir)May13_20\Unity.Postprocessing.Runtime.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Unity.ProBuilder">
+	    <HintPath>$(LibsDir)May13_20\Unity.ProBuilder.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Unity.ProBuilder.KdTree">
+	    <HintPath>$(LibsDir)May13_20\Unity.ProBuilder.KdTree.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Unity.ProBuilder.Poly2Tri">
+	    <HintPath>$(LibsDir)May13_20\Unity.ProBuilder.Poly2Tri.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Unity.TextMeshPro">
+	    <HintPath>$(LibsDir)May13_20\Unity.TextMeshPro.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Unity.Timeline">
+	    <HintPath>$(LibsDir)May13_20\Unity.Timeline.dll</HintPath>
+	  </Reference>
+	  <Reference Include="unity.ucg.mmconnector">
+	    <HintPath>$(LibsDir)May13_20\unity.ucg.mmconnector.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Unity.ucg.QoS">
+	    <HintPath>$(LibsDir)May13_20\Unity.ucg.QoS.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.AccessibilityModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.AccessibilityModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.AIModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.AIModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.AndroidJNIModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.AndroidJNIModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.AnimationModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.AnimationModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.ARModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.ARModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.AssetBundleModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.AssetBundleModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.AudioModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.AudioModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.ClothModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.ClothModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.ClusterInputModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.ClusterInputModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.ClusterRendererModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.ClusterRendererModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.CoreModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.CoreModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.CrashReportingModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.CrashReportingModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.DirectorModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.DirectorModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.DSPGraphModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.DSPGraphModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.GameCenterModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.GameCenterModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.GridModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.GridModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.HotReloadModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.HotReloadModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.ImageConversionModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.ImageConversionModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.IMGUIModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.IMGUIModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.InputLegacyModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.InputLegacyModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.InputModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.InputModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.JSONSerializeModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.JSONSerializeModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.LocalizationModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.LocalizationModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.ParticleSystemModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.ParticleSystemModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.PerformanceReportingModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.PerformanceReportingModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.Physics2DModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.Physics2DModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.PhysicsModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.PhysicsModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.ProfilerModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.ProfilerModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.ScreenCaptureModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.ScreenCaptureModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.SharedInternalsModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.SharedInternalsModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.SpriteMaskModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.SpriteMaskModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.SpriteShapeModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.SpriteShapeModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.StreamingModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.StreamingModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.SubstanceModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.SubstanceModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.SubsystemsModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.SubsystemsModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.TerrainModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.TerrainModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.TerrainPhysicsModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.TerrainPhysicsModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.TextCoreModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.TextCoreModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.TextRenderingModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.TextRenderingModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.TilemapModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.TilemapModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.TLSModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.TLSModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.Ucg.Matchmaking">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.Ucg.Matchmaking.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UI">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.UI.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UIElementsModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.UIElementsModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UIModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.UIModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UmbraModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.UmbraModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UNETModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.UNETModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UnityAnalyticsModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.UnityAnalyticsModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UnityConnectModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.UnityConnectModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UnityTestProtocolModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.UnityTestProtocolModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UnityWebRequestAssetBundleModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UnityWebRequestAudioModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UnityWebRequestModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.UnityWebRequestModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UnityWebRequestTextureModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UnityWebRequestWWWModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.VehiclesModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.VehiclesModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.VFXModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.VFXModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.VideoModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.VideoModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.VRModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.VRModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.WindModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.WindModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.XRModule">
+	    <HintPath>$(LibsDir)May13_20\UnityEngine.XRModule.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
+</Project>

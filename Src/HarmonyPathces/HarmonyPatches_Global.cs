@@ -3,6 +3,8 @@ using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Events;
 using FallGuys.Player.Protocol.Client.Cosmetics;
 using FG.Common;
+using FG.Common.Character;
+
 #if !APR_27
 using FG.Common.CatapultServices;
 using FG.Common.Character;
@@ -125,6 +127,9 @@ namespace FGLegacyTools.HarmonyPathces
         {
             switch (newState)
             {
+                case SessionState.Countdown:
+                    Utility.HandleState(Utility.State.Countdown);
+                    break;
                 case SessionState.Results:
 #if APR_27
                     Utility.Instance.RequestRandomRound();
@@ -202,17 +207,18 @@ namespace FGLegacyTools.HarmonyPathces
                 CGMDespatcher.process(new GameMessageServerStartGame()
                 {
                     CountdownRemaining = 5,
-                    GameTimeRemaining = Utility.Instance.ActiveRound.Duration + 5,
+                    GameTimeRemaining = Utility.ActiveRound.Duration + 5,
                     InitialTeamScores = new(),
-                    NumTeams = Utility.Instance.ActiveRound.TeamCount,
+                    NumTeams = Utility.ActiveRound.TeamCount,
                     TeamAssignments = new(),
 #if !APR_27
                     InitialPlayerCount = 1,
 #endif
                 });
             }
-            catch
+            catch (System.Exception ex)
             {
+                Plugin.Log.LogError(ex);
                 Utility.Leave("Something went wrong...\nloading this round again may fix the issue");
             }
             return false;
@@ -295,7 +301,7 @@ namespace FGLegacyTools.HarmonyPathces
                                 _spawnObjectType = EnumSpawnObjectType.PLAYER,
                                 _scale = Vector3.one,
 #if APR_27
-                            _spawnData = NetworkAware_Player_NoEditor.NetworkAwarePlayer.encodeSpawnData(GlobalGameStateClient.Instance.GetLocalClientNetworkID(), 0, System.Environment.UserName, false, GlobalGameStateClient.Instance.CustomisationSelections),
+                                _spawnData = NetworkAware_Player_NoEditor.NetworkAwarePlayer.encodeSpawnData(GlobalGameStateClient.Instance.GetLocalClientNetworkID(), 0, System.Environment.UserName, false, Resources.FindObjectsOfTypeAll<PlayerProfile>().FirstOrDefault().CustomisationSelections),
 #else
                                 _spawnData = NetworkAware_Player_NoEditor.NetworkAwarePlayer.encodeSpawnData(GlobalGameStateClient.Instance.GetLocalClientNetworkID(), 0, System.Environment.UserName, team, false, GlobalGameStateClient.Instance._playerProfile.CustomisationSelections),
 #endif
@@ -303,7 +309,9 @@ namespace FGLegacyTools.HarmonyPathces
                         };
                         CGMDespatcher.process(msg);
 
+#if !APR_27
                         __instance._eventInstanceLoadingMusic.value.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+#endif
                         Utility.Instance.StartIntro();
                         break;
                     case PlayerReadinessState.ReadyToPlay:
@@ -312,7 +320,7 @@ namespace FGLegacyTools.HarmonyPathces
                         {
                             blocks.enabled = true;
 #if APR_27
-                        blocks?.HandleServerInitialSetup();
+                            blocks?.HandleServerInitialSetup();
 #endif
                             blocks?.HandleSetupFromData();
                         }
@@ -324,20 +332,20 @@ namespace FGLegacyTools.HarmonyPathces
                         break;
                 }
             }
-            catch
+            catch (System.Exception ex)
             {
+                Plugin.Log.LogError(ex);
                 Utility.Leave("Something went wrong...");
             }
         }
 
-#if !APR_27
         [HarmonyPatch(typeof(MotorFunctionMantleStateGrab), nameof(MotorFunctionMantleStateGrab.Begin)), HarmonyPostfix]
         static void StartHang(MotorFunctionMantleStateGrab __instance, int prevState)
         {
             var mantleController = __instance.Character.MotorAgent.GetMotorFunction<MotorFunctionMantle>();
             Utility.Instance.ContinueMantle(mantleController.GetState<MotorFunctionMantleStateClimbUp>().ID);
         }
-
+#if !APR_27
         [HarmonyPatch(typeof(StateGameLoading), nameof(StateGameLoading.StartIntroCameras)), HarmonyPrefix]
         static bool StartIntroCameras(StateGameLoading __instance)
         {

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <AssemblyName>ThatOneRandom3AMProject_$(Configuration)</AssemblyName>
+    <AssemblyName>FGLegacyTools_$(Configuration)</AssemblyName>
     <Product>My first plugin</Product>
     <Version>0.0.1</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -12,10 +12,10 @@
       https://nuget.bepinex.dev/v3/index.json;
       https://nuget.samboy.dev/v3/index.json
     </RestoreAdditionalProjectSources>
-    <RootNamespace>ThatOneRandom3AMProject</RootNamespace>
+    <RootNamespace>FGLegacyTools</RootNamespace>
     <Configurations>APR_27;APR_30;MAY_13</Configurations>
 	<Authors>floyzi</Authors>
-	<PackageProjectUrl>https://github.com/floyzi/</PackageProjectUrl>
+	<PackageProjectUrl>https://github.com/floyzi/FGLegacyTools</PackageProjectUrl>
 	<Optimize>True</Optimize>
   </PropertyGroup>
 

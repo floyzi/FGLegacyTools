@@ -5,6 +5,9 @@ using FG.Common;
 using FG.Common.Character;
 using FG.Common.CMS;
 using FGClient;
+using FGLegacyTools.GameStateView;
+using FGLegacyTools.HarmonyPathces;
+using FGLegacyTools.ServerGameStateView;
 using HarmonyLib;
 using Il2CppInterop.Runtime;
 using Il2CppInterop.Runtime.Injection;
@@ -15,12 +18,10 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using FGLegacyTools.GameStateView;
-using FGLegacyTools.HarmonyPathces;
-using FGLegacyTools.ServerGameStateView;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 using static AudioConsts.Params.Player;
 using static FG.Common.COMMON_ObjectiveBase;
 using static MenuInputHandler;
@@ -33,6 +34,7 @@ namespace FGLegacyTools
         {
             NotLoaded,
             Loading,
+            Countdown,
             Playing,
             Playing_Respawn
         }
@@ -40,7 +42,7 @@ namespace FGLegacyTools
         string RoundToPlay = "round_";
         StateGameLoading GameLoading;
         internal IGameStateView ServerGameStateView;
-        internal Round ActiveRound;
+        internal static Round ActiveRound;
         static FallGuysCharacterController LocalPlayer;
         bool UsingFreeFly;
         bool UIVisible = true;
@@ -70,7 +72,12 @@ namespace FGLegacyTools
                     CGM = GlobalGameStateClient.Instance.GameStateView.GetLiveClientGameManager();
                     LocalPlayer = CGM.GetMyPlayer().GetComponent<FallGuysCharacterController>();
                     LocalPlayer.NetObject.IsRemotelyControlledObject = false;
+#if !APR_27
                     CGM._eventInstanceLoadingMusic.value.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+#else
+                    if (ActiveRound.Id == "round_egg_grab")
+                        CGM.CameraDirector.AddCloseCameraTarget(LocalPlayer.gameObject, System.Environment.UserName, true, true);
+#endif
                     break;
             }
         }
@@ -147,7 +154,7 @@ namespace FGLegacyTools
 
         internal void BootGame(string play)
         {
-            if (CurrentState == State.Loading)
+            if (CurrentState == State.Loading || CurrentState == State.Countdown)
                 return;
 
             if (string.IsNullOrEmpty(play))
@@ -210,6 +217,11 @@ namespace FGLegacyTools
             var r = cms.Rounds[play];
             NetworkGameData.SetGameOptionsFromRoundData(r);
 
+
+            //if we loading the same scene again game will stuck on loading. forcing leave to menu to prevent this
+            if (ActiveRound != null && ActiveRound.SceneName == r.SceneName)
+                Leave();
+
             GameLoading = new StateGameLoading(GlobalGameStateClient.Instance._gameStateMachine, GlobalGameStateClient.Instance.CreateClientGameStateData(), GamePermission.Player, false, false);
             GlobalGameStateClient.Instance._gameStateMachine.ReplaceCurrentState(GameLoading.Cast<GameStateMachine.IGameState>());
             HandleState(State.Loading);
@@ -246,6 +258,11 @@ namespace FGLegacyTools
 #else
                 playerId = GlobalGameStateClient.Instance.GameStateView.GetLiveClientGameManager()._myPlayerNetID.m_NetworkID,
 #endif
+            });
+
+            CGMDespatcher.process(new GameMessageServerUnspawnObject()
+            {
+                m_netID = GlobalGameStateClient.Instance.GameStateView.GetLiveClientGameManager()._myPlayerNetID,
             });
 
             CGMDespatcher.process(new GameMessageServerEndRound()
@@ -298,6 +315,11 @@ namespace FGLegacyTools
 #else
                 playerId = GlobalGameStateClient.Instance.GameStateView.GetLiveClientGameManager()._myPlayerNetID.m_NetworkID,
 #endif
+            });
+
+            CGMDespatcher.process(new GameMessageServerUnspawnObject()
+            {
+                m_netID = GlobalGameStateClient.Instance.GameStateView.GetLiveClientGameManager()._myPlayerNetID,
             });
 
             CGMDespatcher.process(new GameMessageServerEndRound()
@@ -356,21 +378,25 @@ namespace FGLegacyTools
                 return;
 
             var isBuildKnown = Definitions.KnownBuilds.Contains(Application.version);
+            var s = new GUIStyle(GUI.skin.label)
+            {
+                wordWrap = false,
+                alignment = TextAnchor.UpperCenter,
+            };
 
             var bottomContent = new StringBuilder();
             bottomContent.AppendLine($"{Plugin.BuildDetails} #{Plugin.BuildDetails.GetCommit(8)}");
             if (!isBuildKnown)
                 bottomContent.AppendLine("<color=red>UNKNOWN BUILD!</color>");
 
-            var bottomSize = GUI.skin.label.CalcSize(new(bottomContent.ToString()));
             var boxWidth = GUI.skin.box.CalcSize(new(DisplayName));
-
             var actualWidth = boxWidth.x < 102 ? 102 : boxWidth.x;
-            actualWidth = bottomSize.x > actualWidth ? bottomSize.x : actualWidth;
+            var bottomSize = s.CalcSize(new(bottomContent.ToString()));
+            actualWidth = bottomSize.x + 10 > actualWidth ? bottomSize.x + 10 : actualWidth;
 
-            GUI.Box(new(0, 0, actualWidth, 140 + bottomSize.y - 15), "");
-            GUI.Box(new(0, 0, actualWidth, 140 + bottomSize.y - 15), "");
-            GUI.Box(new(0, 0, actualWidth, 140 + bottomSize.y - 15), DisplayName);
+            GUI.Box(new(0, 0, actualWidth, 140 + bottomSize.y -10), "");
+            GUI.Box(new(0, 0, actualWidth, 140 + bottomSize.y -10), "");
+            GUI.Box(new(0, 0, actualWidth, 140 + bottomSize.y - 10), DisplayName);
 
             RoundToPlay = GUI.TextField(new(5, 20, actualWidth - 10, 20), RoundToPlay);
 
@@ -433,7 +459,7 @@ namespace FGLegacyTools
                 });
             }
 
-            GUI.Label(new(5, 140, actualWidth - 10, bottomSize.y), $"{bottomContent}", new(GUI.skin.label) { alignment = TextAnchor.UpperCenter });
+            GUI.Label(new(5, 140, actualWidth - 10, bottomSize.y), $"{bottomContent}", s);
         }
 
         internal void StartIntro() => GameLoading.StartIntroCameras();

@@ -19,7 +19,7 @@ using static FG.Common.CMS.RoundPool;
 using BindingFlags = Il2CppSystem.Reflection.BindingFlags;
 using Stage = FG.Common.CMS.RoundPool.Stage;
 
-namespace ThatOneRandom3AMProject
+namespace FGLegacyTools
 {
     internal static class FLZ_CMSParser
     {

@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace ThatOneRandom3AMProject.GameStateView
+namespace FGLegacyTools.GameStateView
 {
     [Il2CppImplements(typeof(IGameStateView))]
     internal class FLZ_ClientGameStateView : Il2CppSystem.Object

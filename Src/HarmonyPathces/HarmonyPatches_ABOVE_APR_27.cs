@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace ThatOneRandom3AMProject.HarmonyPathces
+namespace FGLegacyTools.HarmonyPathces
 {
     public static partial class HarmonyPatches
     {

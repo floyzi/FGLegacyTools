@@ -24,14 +24,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 #if !APR_27
-using ThatOneRandom3AMProject.Cosmetics;
+using FGLegacyTools.Cosmetics;
 #endif
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static COMMON_PrefabSpawner;
 using static FG.Common.GameSession;
 
-namespace ThatOneRandom3AMProject.HarmonyPathces
+namespace FGLegacyTools.HarmonyPathces
 {
     public static partial class HarmonyPatches
     {
@@ -66,6 +66,7 @@ namespace ThatOneRandom3AMProject.HarmonyPathces
             "COMMON_GrabToQualify",
             "TeamQualificationObjectsScoreTracker",
             "UITrackedObjectiveTransform",
+            "RolloutManager"
 
         ];
 
@@ -131,7 +132,7 @@ namespace ThatOneRandom3AMProject.HarmonyPathces
                     if (!Utility.Instance.Won)
                         Utility.Instance.RequestRandomRound();
                     else
-                        GlobalGameStateClient.Instance.SwitchToVictoryScreen(Resources.FindObjectsOfTypeAll<PlayerProfile>().FirstOrDefault().CustomisationSelections, System.Environment.UserName, true);
+                        GlobalGameStateClient.Instance.SwitchToVictoryScreen(GlobalGameStateClient.Instance.CustomisationSelections, System.Environment.UserName, true);
                  
 #endif
                     break;
@@ -195,25 +196,31 @@ namespace ThatOneRandom3AMProject.HarmonyPathces
         [HarmonyPatch(typeof(StateGameLoading), nameof(StateGameLoading.OnIntroCamerasComplete)), HarmonyPrefix]
         static bool OnIntroCamerasComplete(StateGameLoading __instance)
         {
-            Broadcaster.Instance.Broadcast(new GameStateEvents.IntroCameraSequenceEndedEvent());
-            CGMDespatcher.process(new GameMessageServerStartGame()
+            try
             {
-                CountdownRemaining = 5,
-                GameTimeRemaining = Utility.Instance.ActiveRound.Duration + 5,
-                InitialTeamScores = new(),
-                NumTeams = Utility.Instance.ActiveRound.TeamCount,
-                TeamAssignments = new(),
+                Broadcaster.Instance.Broadcast(new GameStateEvents.IntroCameraSequenceEndedEvent());
+                CGMDespatcher.process(new GameMessageServerStartGame()
+                {
+                    CountdownRemaining = 5,
+                    GameTimeRemaining = Utility.Instance.ActiveRound.Duration + 5,
+                    InitialTeamScores = new(),
+                    NumTeams = Utility.Instance.ActiveRound.TeamCount,
+                    TeamAssignments = new(),
 #if !APR_27
-                InitialPlayerCount = 1,
+                    InitialPlayerCount = 1,
 #endif
-            });
+                });
+            }
+            catch
+            {
+                Utility.Leave("Something went wrong...\nloading this round again may fix the issue");
+            }
             return false;
         }
 
         [HarmonyPatch(typeof(CarryObject), nameof(CarryObject.Start)), HarmonyPrefix]
         static bool Start(CarryObject __instance)
         {
-
             var netObj = __instance.gameObject.AddComponent<MPGNetObject>();
             netObj.netID_ = GlobalGameStateClient.Instance.NetObjectManager.getNextNetID();
             netObj.spawnObjectType_ = EnumSpawnObjectType.POSSESS;
@@ -252,91 +259,74 @@ namespace ThatOneRandom3AMProject.HarmonyPathces
         [HarmonyPatch(typeof(ClientGameManager), nameof(ClientGameManager.SetReady)), HarmonyPostfix]
         static void SetReady(ClientGameManager __instance, PlayerReadinessState readinessState)
         {
-            switch (readinessState)
+            try
             {
-                case PlayerReadinessState.LevelLoaded:
+                switch (readinessState)
+                {
+                    case PlayerReadinessState.LevelLoaded:
 
-                    foreach (var doorset in Resources.FindObjectsOfTypeAll<COMMON_FakeDoorRandomiser>())
-                    {
-                        doorset.InitializeServerSideData();
-                        doorset.CreateBreakableDoors();
-                    }
-
-                    foreach (var pathSet in Resources.FindObjectsOfTypeAll<COMMON_GridPathRandomiser>())
-                    {
-                        pathSet?.GeneratePath();
-                        pathSet?.CreatePathFromData();
-                    }
-
-#if !APR_27
-                    foreach (var rlm in Resources.FindObjectsOfTypeAll<RolloutManager>())
-                    {
-                        var res = new Il2CppSystem.Collections.Generic.List<int>();
-                        int ringSchemas = rlm._ringSegmentSchemas.Count;
-                        int ringLimit = UnityEngine.Random.Range(2, ringSchemas);
-                        int addedRings = 0;
-
-                        for (int i = 0; i < ringSchemas; i++)
+                        foreach (var doorset in Resources.FindObjectsOfTypeAll<COMMON_FakeDoorRandomiser>())
                         {
-                            if (addedRings < ringSchemas)
+                            doorset.InitializeServerSideData();
+                            doorset.CreateBreakableDoors();
+                        }
+
+                        foreach (var pathSet in Resources.FindObjectsOfTypeAll<COMMON_GridPathRandomiser>())
+                        {
+                            pathSet?.GeneratePath();
+                            pathSet?.CreatePathFromData();
+                        }
+
+                        __instance.GameRules.PreparePlayerStartingPositions();
+
+                        var team = Utility.Instance.GetTeamForPlayer();
+                        var pos = __instance.GameRules.PickRespawnPosition(team);
+                        var msg = new GameMessageServerSpawnObject()
+                        {
+                            _netObjectSpawnData = new()
                             {
-                                int ringMax = UnityEngine.Random.Range(0, rlm._ringSegmentSchemas[i].PrefabPool.Count);
-                                res.Add(ringMax);
-                                addedRings++;
-                            }
-                        }
-                    }
-#endif
-
-                    __instance.GameRules.PreparePlayerStartingPositions();
-
-                    var team = Utility.Instance.GetTeamForPlayer();
-                    var pos = __instance.GameRules.PickRespawnPosition(team);
-                    CGMDespatcher.process(new GameMessageServerSpawnObject()
-                    {
-                        _netObjectSpawnData = new()
-                        {
-                            _creationMode = NetObjectSpawnData.EnumCreationMode.Spawn,
-                            _hash = -491682846,
-                            _extrapolationPolicy = MPGNetObject.TransformExtrapolationPolicy.ApplyLocalPhysics,
-                            _netID = GlobalGameStateClient.Instance.NetObjectManager.getNextNetID(),
-                            _playoutBufferModifier = 0,
-                            _position = pos.transform.position,
-                            _rotation = pos.transform.rotation,
-                            _spawnObjectType = EnumSpawnObjectType.PLAYER,
-                            _scale = Vector3.one,
+                                _creationMode = NetObjectSpawnData.EnumCreationMode.Spawn,
+                                _hash = -491682846,
+                                _extrapolationPolicy = MPGNetObject.TransformExtrapolationPolicy.ApplyLocalPhysics,
+                                _netID = GlobalGameStateClient.Instance.NetObjectManager.getNextNetID(),
+                                _playoutBufferModifier = 0,
+                                _position = pos.transform.position,
+                                _rotation = pos.transform.rotation,
+                                _spawnObjectType = EnumSpawnObjectType.PLAYER,
+                                _scale = Vector3.one,
 #if APR_27
-                            _spawnData = NetworkAware_Player_NoEditor.NetworkAwarePlayer.encodeSpawnData(GlobalGameStateClient.Instance.GetLocalClientNetworkID(), 0, System.Environment.UserName, false, Resources.FindObjectsOfTypeAll<PlayerProfile>().First().CustomisationSelections),
+                            _spawnData = NetworkAware_Player_NoEditor.NetworkAwarePlayer.encodeSpawnData(GlobalGameStateClient.Instance.GetLocalClientNetworkID(), 0, System.Environment.UserName, false, GlobalGameStateClient.Instance.CustomisationSelections),
 #else
-                            _spawnData = NetworkAware_Player_NoEditor.NetworkAwarePlayer.encodeSpawnData(GlobalGameStateClient.Instance.GetLocalClientNetworkID(), 0, System.Environment.UserName, team, false, Resources.FindObjectsOfTypeAll<PlayerProfile>().First().CustomisationSelections),
+                                _spawnData = NetworkAware_Player_NoEditor.NetworkAwarePlayer.encodeSpawnData(GlobalGameStateClient.Instance.GetLocalClientNetworkID(), 0, System.Environment.UserName, team, false, GlobalGameStateClient.Instance._playerProfile.CustomisationSelections),
 #endif
-                        }
-                    });
+                            }
+                        };
+                        CGMDespatcher.process(msg);
 
-                    Utility.Instance.StartIntro();
-                    break;
-                case PlayerReadinessState.ReadyToPlay:
-                    var blocks = Resources.FindObjectsOfTypeAll<COMMON_ScrollingSceneRandomiser>().ToList().Find(x => x.gameObject.scene.name == SceneManager.GetActiveScene().name);
-                    if (blocks != null)
-                    {
-                        blocks.enabled = true;
+                        __instance._eventInstanceLoadingMusic.value.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                        Utility.Instance.StartIntro();
+                        break;
+                    case PlayerReadinessState.ReadyToPlay:
+                        var blocks = Resources.FindObjectsOfTypeAll<COMMON_ScrollingSceneRandomiser>().ToList().Find(x => x.gameObject.scene.name == SceneManager.GetActiveScene().name);
+                        if (blocks != null)
+                        {
+                            blocks.enabled = true;
 #if APR_27
                         blocks?.HandleServerInitialSetup();
 #endif
-                        blocks?.HandleSetupFromData();
-                    }
+                            blocks?.HandleSetupFromData();
+                        }
 
-                    var ourPlayer = GlobalGameStateClient.Instance.GameStateView.GetLiveClientGameManager().GetMyPlayer().GetComponent<MPGNetObject>();
-                    ourPlayer.IsRemotelyControlledObject = false;
-                    Utility.Instance.SetPlayer(ourPlayer);
+                        foreach (var netObj in Resources.FindObjectsOfTypeAll<MPGNetObject>())
+                            netObj.IsRemotelyControlledObject = false;
 
-                    foreach (var netObj in Resources.FindObjectsOfTypeAll<MPGNetObject>())
-                        netObj.IsRemotelyControlledObject = false;
-
-                    //foreach (var netObj in Resources.FindObjectsOfTypeAll<CarryObject>())
-                    //    GameObject.Destroy(netObj);
-
-                    break;
+                        Utility.HandleState(Utility.State.Playing);
+                        break;
+                }
+            }
+            catch
+            {
+                Utility.Leave("Something went wrong...");
             }
         }
 
@@ -345,10 +335,16 @@ namespace ThatOneRandom3AMProject.HarmonyPathces
         static void StartHang(MotorFunctionMantleStateGrab __instance, int prevState)
         {
             var mantleController = __instance.Character.MotorAgent.GetMotorFunction<MotorFunctionMantle>();
-            Utility.Instance.StartCoroutine(Utility.Instance.ContinueMantle(mantleController.GetState<MotorFunctionMantleStateClimbUp>().ID).WrapToIl2Cpp());
+            Utility.Instance.ContinueMantle(mantleController.GetState<MotorFunctionMantleStateClimbUp>().ID);
+        }
+
+        [HarmonyPatch(typeof(StateGameLoading), nameof(StateGameLoading.StartIntroCameras)), HarmonyPrefix]
+        static bool StartIntroCameras(StateGameLoading __instance)
+        {
+            __instance._clientGameManager._eventInstanceLoadingMusic.value.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+            return true;
         }
 #endif
-
         [HarmonyPatch(typeof(COMMON_PrefabSpawner), nameof(COMMON_PrefabSpawner.Spawn)), HarmonyPrefix]
         static bool Spawn(COMMON_PrefabSpawner __instance)
         {

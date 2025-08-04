@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ThatOneRandom3AMProject
+namespace FGLegacyTools
 {
     internal static class FLZ_Extensions
     {

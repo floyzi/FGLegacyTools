@@ -8,7 +8,7 @@ using Il2CppInterop.Runtime.Injection;
 using System;
 using UnityEngine;
 
-namespace ThatOneRandom3AMProject.ServerGameStateView
+namespace FGLegacyTools.ServerGameStateView
 {
 
     [Il2CppImplements(typeof(IGameStateServerActions))]
@@ -111,6 +111,11 @@ namespace ThatOneRandom3AMProject.ServerGameStateView
             throw new NotImplementedException();
         }
 
+        void StartSubRound(int subRoundIndex)
+        {
+            throw new NotImplementedException();
+        }
+
 #if !APR_27
         void SetJumbotronDisplay(JumbotronDisplayNetworkData displaydata)
         {
@@ -122,9 +127,5 @@ namespace ThatOneRandom3AMProject.ServerGameStateView
             throw new NotImplementedException();
         }
 #endif
-        void StartSubRound(int subRoundIndex)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

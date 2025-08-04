@@ -41,8 +41,8 @@
 	</ItemGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(ReleaseDir)" />
-		<Copy SourceFiles="$(OutputPath)$(AssemblyName).pdb" DestinationFolder="$(ReleaseDir)" Condition="Exists('$(OutputPath)$(AssemblyName).pdb')" />
+		<Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(ReleaseDir)\$(AssemblyName)" />
+		<Copy SourceFiles="$(OutputPath)$(AssemblyName).pdb" DestinationFolder="$(ReleaseDir)\$(AssemblyName)" Condition="Exists('$(OutputPath)$(AssemblyName).pdb')" />
 	</Target>
 	
   <ItemGroup>

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using static Il2CppSystem.Net.WebSockets.ClientWebSocket;
 
-namespace ThatOneRandom3AMProject.Cosmetics
+namespace FGLegacyTools.Cosmetics
 {
     internal static class CosmeticsExtensions
     {

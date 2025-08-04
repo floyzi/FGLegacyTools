@@ -1,4 +1,6 @@
-﻿using Events;
+﻿using BepInEx.Unity.IL2CPP.Utils.Collections;
+using DG.Tweening;
+using Events;
 using FG.Common;
 using FG.Common.Character;
 using FG.Common.CMS;
@@ -13,34 +15,64 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using ThatOneRandom3AMProject.GameStateView;
-using ThatOneRandom3AMProject.HarmonyPathces;
-using ThatOneRandom3AMProject.ServerGameStateView;
+using FGLegacyTools.GameStateView;
+using FGLegacyTools.HarmonyPathces;
+using FGLegacyTools.ServerGameStateView;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
+using static AudioConsts.Params.Player;
 using static FG.Common.COMMON_ObjectiveBase;
 using static MenuInputHandler;
 
-namespace ThatOneRandom3AMProject
+namespace FGLegacyTools
 {
     internal class Utility : MonoBehaviour
     {
+        internal enum State
+        {
+            NotLoaded,
+            Loading,
+            Playing,
+            Playing_Respawn
+        }
         internal static Utility Instance;
         string RoundToPlay = "round_";
         StateGameLoading GameLoading;
         internal IGameStateView ServerGameStateView;
         internal Round ActiveRound;
-        internal FallGuysCharacterController LocalPlayer;
+        static FallGuysCharacterController LocalPlayer;
         bool UsingFreeFly;
         bool UIVisible = true;
         internal bool Won;
+        int CachedTeam = -1;
+        static State CurrentState = State.NotLoaded;
+        internal static ClientGameManager CGM;
         void Awake()
         {
             if (Instance != null)
                 Destroy(Instance);
 
             Instance = this;
+        }
+
+        internal static void HandleState(State newState)
+        {
+            var prevState = CurrentState;
+            CurrentState = newState;
+
+            switch (newState)
+            {
+                case State.Playing:
+                    if (prevState == State.Playing_Respawn)
+                        return;
+
+                    CGM = GlobalGameStateClient.Instance.GameStateView.GetLiveClientGameManager();
+                    LocalPlayer = CGM.GetMyPlayer().GetComponent<FallGuysCharacterController>();
+                    LocalPlayer.NetObject.IsRemotelyControlledObject = false;
+                    CGM._eventInstanceLoadingMusic.value.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                    break;
+            }
         }
 
         void Update()
@@ -54,10 +86,7 @@ namespace ThatOneRandom3AMProject
                 return;
 
             if (Input.GetKeyDown(KeyCode.R))
-            {
-                var pos = GlobalGameStateClient.Instance.GameStateView.GetLiveClientGameManager().GameRules.PickRespawnPosition(-1);
-                LocalPlayer.transform.SetPositionAndRotation(pos.transform.position, pos.transform.rotation);
-            }
+                RespawnPlayer();
 
             if (Input.GetKeyDown(KeyCode.F5))
             {
@@ -87,8 +116,6 @@ namespace ThatOneRandom3AMProject
 
             return cms;
         }
-
-        internal void SetPlayer(MPGNetObject player) => LocalPlayer = player.GetComponent<FallGuysCharacterController>();
 
         public void FreeFlyController()
         {
@@ -120,7 +147,9 @@ namespace ThatOneRandom3AMProject
 
         internal void BootGame(string play)
         {
-            
+            if (CurrentState == State.Loading)
+                return;
+
             if (string.IsNullOrEmpty(play))
                 play = RoundToPlay;
 
@@ -171,6 +200,8 @@ namespace ThatOneRandom3AMProject
 
             UsingFreeFly = false;
             Won = false;
+            CachedTeam = -1;
+
             ServerGameStateView = new FLZ_ClientGameStateView().Cast<IGameStateView>();
 
             var actions = new FLZ_ServerGameStateActions();
@@ -181,7 +212,8 @@ namespace ThatOneRandom3AMProject
 
             GameLoading = new StateGameLoading(GlobalGameStateClient.Instance._gameStateMachine, GlobalGameStateClient.Instance.CreateClientGameStateData(), GamePermission.Player, false, false);
             GlobalGameStateClient.Instance._gameStateMachine.ReplaceCurrentState(GameLoading.Cast<GameStateMachine.IGameState>());
-            
+            HandleState(State.Loading);
+
             ActiveRound = r;
             COMMON_ObjectiveReachEndZone.m_OnObjectiveSatisfied_SERVERONLY = null;
             COMMON_ObjectiveReachEndZone.m_OnObjectiveSatisfied_SERVERONLY += DelegateSupport.ConvertDelegate<HandleObjectiveSatisfied>(DoQualification);
@@ -192,7 +224,8 @@ namespace ThatOneRandom3AMProject
             if (ActiveRound == null || ActiveRound.TeamCount == 0)
                 return -1;
 
-            return UnityEngine.Random.RandomRange(0, ActiveRound.TeamCount - 1);
+            CachedTeam = UnityEngine.Random.RandomRange(0, ActiveRound.TeamCount - 1);
+            return CachedTeam;
         }
 
         void DoQualification(MPGNetID playerObjectNetID, COMMON_ObjectiveBase pObjective)
@@ -223,12 +256,35 @@ namespace ThatOneRandom3AMProject
             });
         }
 
+        internal void RespawnPlayer()
+        {
+            if (CurrentState == State.Playing_Respawn)
+                return;
+
+            StartCoroutine(_respawn().WrapToIl2Cpp());
+        }
+
+        //since first betas don't have proper respawning (or i am just blind) we will be using this 
+        IEnumerator _respawn()
+        {
+            HandleState(State.Playing_Respawn);
+            var pos = GlobalGameStateClient.Instance.GameStateView.GetLiveClientGameManager().GameRules.PickRespawnPosition(CachedTeam);
+            LocalPlayer.RigidBody.isKinematic = true;
+            LocalPlayer.ResetToDefaultState();
+            yield return new WaitForEndOfFrame();
+            LocalPlayer.transform.SetPositionAndRotation(pos.transform.position + new Vector3(0, 0.5f, 0), pos.transform.rotation);
+            CGM.CameraDirector.StartRecenterToHeading();
+            yield return new WaitForSeconds(0.15f);
+            LocalPlayer.RigidBody.isKinematic = UsingFreeFly;
+            HandleState(State.Playing);
+        }
+
         internal void DoElimination()
         {
             if (!GlobalGameStateClient.Instance.GameStateView.IsGamePlaying)
                 return;
 
-            //for some reason it insta kills you on slime climb
+            //for some reason it insta kills you on slime climb (of course it's just badly placed lava trigger)
             if (SceneManager.GetActiveScene().name.ToLower().Contains("lava"))
                 return;
 
@@ -252,9 +308,24 @@ namespace ThatOneRandom3AMProject
             });
         }
 
-        static void Leave()
+        internal static void Leave(string reason = null)
         {
+            HandleState(State.NotLoaded);
             GlobalGameStateClient.Instance._gameStateMachine.ReplaceCurrentState(new StateReloading(GlobalGameStateClient.Instance._gameStateMachine, false, GlobalGameStateClient.Instance.CreateClientGameStateData()).Cast<GameStateMachine.IGameState>());
+            
+            if (!string.IsNullOrEmpty(reason))
+            {
+                PushString("generic_leave_reason_title", "UH OH");
+                PushString("generic_leave_reason_desc", reason);
+
+                Broadcaster.Instance.Broadcast(new ShowModalMessageEvent()
+                {
+                    Title = "generic_leave_reason_title",
+                    Message = "generic_leave_reason_desc",
+                    ModalType = UIModalMessage.ModalType.MT_OK,
+                });
+
+            }
         }
 
         internal void RequestRandomRound()
@@ -287,15 +358,17 @@ namespace ThatOneRandom3AMProject
             var isBuildKnown = Definitions.KnownBuilds.Contains(Application.version);
 
             var bottomContent = new StringBuilder();
-            bottomContent.AppendLine($"{Plugin.BuildDetails} #{Plugin.BuildDetails.GetCommit(6)}");
+            bottomContent.AppendLine($"{Plugin.BuildDetails} #{Plugin.BuildDetails.GetCommit(8)}");
             if (!isBuildKnown)
                 bottomContent.AppendLine("<color=red>UNKNOWN BUILD!</color>");
 
             var bottomSize = GUI.skin.label.CalcSize(new(bottomContent.ToString()));
             var boxWidth = GUI.skin.box.CalcSize(new(DisplayName));
-            var actualWidth = boxWidth.x < 102 ? 102 : boxWidth.x;
 
-            GUI.Box(new(0, 0, actualWidth, 140 + bottomSize.y - 16), "");
+            var actualWidth = boxWidth.x < 102 ? 102 : boxWidth.x;
+            actualWidth = bottomSize.x > actualWidth ? bottomSize.x : actualWidth;
+
+            GUI.Box(new(0, 0, actualWidth, 140 + bottomSize.y - 15), "");
             GUI.Box(new(0, 0, actualWidth, 140 + bottomSize.y - 15), "");
             GUI.Box(new(0, 0, actualWidth, 140 + bottomSize.y - 15), DisplayName);
 
@@ -360,15 +433,16 @@ namespace ThatOneRandom3AMProject
                 });
             }
 
-            GUI.Label(new(5, 140, actualWidth, bottomSize.y), $"{bottomContent}", new(GUI.skin.label) { alignment = TextAnchor.UpperCenter });
+            GUI.Label(new(5, 140, actualWidth - 10, bottomSize.y), $"{bottomContent}", new(GUI.skin.label) { alignment = TextAnchor.UpperCenter });
         }
 
         internal void StartIntro() => GameLoading.StartIntroCameras();
+        internal void ContinueMantle(int newId) => StartCoroutine(_mantle(newId).WrapToIl2Cpp());
 
         //ass
-        internal IEnumerator ContinueMantle(int newId)
+        IEnumerator _mantle(int newId)
         {
-            yield return new WaitForSeconds(0.25f);
+            yield return new WaitForSeconds(0.15f);
             LocalPlayer.MotorAgent.GetMotorFunction<MotorFunctionMantle>().SetState(newId);
         }
     }

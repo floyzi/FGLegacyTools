@@ -12,5 +12,5 @@ static class Definitions
     ];
 
     internal const string GUID = "flz.random.project";
-    internal const string DisplayName = "NAME WANTED!!";
+    internal const string DisplayName = "LegacyTools";
 }

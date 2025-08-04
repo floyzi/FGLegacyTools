@@ -1,23 +1,15 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
-using FG.Common;
-using FG.Common.CMS;
 using HarmonyLib;
-using Il2CppInterop.Runtime;
 using Il2CppInterop.Runtime.Injection;
-using Mediatonic.Tools.ParsingUtils;
 using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using ThatOneRandom3AMProject.HarmonyPathces;
-using UnityEngine;
-using static Il2CppSystem.Globalization.CultureInfo;
-using Debug = UnityEngine.Debug;
+using FGLegacyTools.HarmonyPathces;
 
-namespace ThatOneRandom3AMProject
+namespace FGLegacyTools
 {
     [BepInPlugin(GUID, DisplayName, MyPluginInfo.PLUGIN_VERSION)]
     public class Plugin : BasePlugin

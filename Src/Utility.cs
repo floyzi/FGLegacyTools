@@ -377,7 +377,7 @@ namespace FGLegacyTools
             if (!UIVisible)
                 return;
 
-            var isBuildKnown = Definitions.KnownBuilds.Contains(Application.version);
+            var isBuildKnown = Constants.KnownBuilds.Contains(Application.version);
             var s = new GUIStyle(GUI.skin.label)
             {
                 wordWrap = false,

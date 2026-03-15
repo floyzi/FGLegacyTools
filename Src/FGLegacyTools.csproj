@@ -23,18 +23,16 @@
 		<ReleaseDir>$(SolutionDir)Release\</ReleaseDir>
 		<LibsDir>$(SolutionDir)Lib\</LibsDir>
 	</PropertyGroup>
-	
+
+	<ItemGroup>
+	  <Compile Remove="Resources\**" />
+	  <EmbeddedResource Remove="Resources\**" />
+	  <None Remove="Resources\**" />
+	</ItemGroup>
+
 	<ItemGroup>
 		<AssemblyMetadata Include="BuildDate" Value="$([System.DateTimeOffset]::UtcNow.ToUnixTimeSeconds())" />
 	</ItemGroup>
-
-  <ItemGroup Condition="'$(Configuration)' == 'APR_27'">
-    <EmbeddedResource Include="AddotionalContent\cms_data_APR_27" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(Configuration)' != 'APR_27'">
-	  <EmbeddedResource Include="AddotionalContent\cms_data_FULL" />
-  </ItemGroup>
 
 	<ItemGroup Condition="'$(Configuration)' == 'APR_27'">
 		<Compile Remove="Cosmetics\**\*.cs" />
@@ -1542,5 +1540,10 @@
 	  <Reference Include="UnityEngine.XRModule">
 	    <HintPath>$(LibsDir)May13_20\UnityEngine.XRModule.dll</HintPath>
 	  </Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Resources\cms_data_APR_27" />
+	  <EmbeddedResource Include="Resources\cms_data_FULL" />
 	</ItemGroup>
 </Project>

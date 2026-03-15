@@ -1,7 +1,7 @@
-﻿global using static Definitions;
+﻿global using static Constants;
 using System.Collections.Generic;
 using UnityEngine;
-static class Definitions
+static class Constants
 {
     //if build is missing from this list a warning will be shown on gui
     internal static HashSet<string> KnownBuilds = 

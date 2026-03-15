@@ -78,9 +78,9 @@ namespace FGLegacyTools.HarmonyPathces
             Plugin.Log.LogInfo($"Starting CMS Parsing ");
 
 #if !APR_27
-            var data = MiniJSON.Json.Parser.Parse(Encoding.UTF8.GetString(FLZ_Extensions.GetEmbeddedRes("AddotionalContent.cms_data_FULL")));
+            var data = MiniJSON.Json.Parser.Parse(Encoding.UTF8.GetString(FLZ_Extensions.GetEmbeddedRes("Resources.cms_data_FULL")));
 #else
-            var data = MiniJSON.Json.Parser.Parse(Encoding.UTF8.GetString(FLZ_Extensions.GetEmbeddedRes("AddotionalContent.cms_data_APR_27")));
+            var data = MiniJSON.Json.Parser.Parse(Encoding.UTF8.GetString(FLZ_Extensions.GetEmbeddedRes("Resources.cms_data_APR_27")));
 #endif
 
             Plugin.Log.LogInfo($"CMS Loaded - Success={data != null}");

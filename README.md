@@ -1,14 +1,15 @@
 # Fall Guys — Legacy Tools
 A small project that was made to bring life to the old Fall Guys betas\
 Targets specifically following builds for now:
-- April 27th, 2020
-- April 30th, 2020
-- May 13th, 2020
+- April 27th, 2020 [[Download on Fall Guys archive](https://fga.floyzi.dev/build/9c0680b5-2ee4-4809-baa3-7f6d6105a839/)]
+- April 30th, 2020 [[Download on Fall Guys archive](https://fga.floyzi.dev/build/e037ad5a-f830-434d-b147-7a033e4d6fba/)]
+- May 13th, 2020 [[Download on Fall Guys archive](https://fga.floyzi.dev/build/077bdde0-4813-4ad2-955f-cc153307cd5d/)]
+
 > [!NOTE]
 > Work on newer builds is not guaranteed although in some cases it still may work
 
 ## Installation
-- Get the needed build (can be found in [Fall Guys Builds Archive](https://floyzi.github.io/fg_archive/) or [Steam Depots](https://steamdb.info/depot/1265941/manifests/) if you own Fall Guys Technical Beta on steam)
+- Get the needed build (can be found on the [Fall Guys Builds Archive](https://fga.floyzi.dev/) or [Steam Depots](https://steamdb.info/depot/1265941/manifests/) if you own Fall Guys Technical Beta on steam)
 - Download the [Latest Release](https://github.com/floyzi/FGLegacyTools/releases/latest) for this build
 - Download [Goldberg Steam Emulator](https://mr_goldberg.gitlab.io/goldberg_emulator/)
 - Copy steam_api64.dll from Goldberg Steam Emulator in ``FallGuys_client_Data\Plugins\x86_64``
